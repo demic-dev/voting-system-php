@@ -1,0 +1,178 @@
+html {
+
+    --header-height: 6rem;
+
+    /* --bs-body-color: ;
+    --bs-body-color-rgb: ;
+    --bs-body-bg: ;
+    --bs-body-bg-rgb: ; */
+    /* --bs-secondary-color: ;
+    --bs-secondary-color-rgb: ;
+    --bs-secondary-bg: ;
+    --bs-secondary-bg-rgb: ;
+    --bs-tertiary-color: ;
+    --bs-tertiary-color-rgb: ;
+    --bs-tertiary-bg: ;
+    --bs-tertiary-bg-rgb: ;
+    --bs-emphasis-color: ;
+    --bs-emphasis-color-rgb: ;
+    --bs-border-color: ;
+    --bs-border-color-rgb: ; */
+    --bs-primary: #091A7A;
+    --bs-primary-rgb: #091A7A;
+    --bs-primary-bg-subtle: #D6E4FF;
+    /* --bs-primary-border-subtle: ; */
+    --bs-primary-text-emphasis: #091A7A;
+
+    --bs-success: #326904;
+    --bs-success-rgb: #326904;
+    --bs-success-bg-subtle: #F2FDD0;
+    /* --bs-success-border-subtle: ; */
+    --bs-success-text-emphasis: #326904;
+
+    --bs-danger: #7A0927;
+    --bs-danger-rgb: #7A0927;
+    --bs-danger-bg-subtle: #FFE6D5;
+    /* --bs-danger-border-subtle: ; */
+    --bs-danger-text-emphasis: #7A0927;
+
+    --bs-warning: #7A480B;
+    --bs-warning-rgb: #7A480B;
+    --bs-warning-bg-subtle: #FFF7D7;
+    /* --bs-warning-border-subtle: ; */
+    --bs-warning-text-emphasis: #7A480B;
+
+    --bs-info: #043578;
+    --bs-info-rgb: #043578;
+    --bs-info-bg-subtle: #D0FCFE;
+    /* --bs-info-border-subtle: ; */
+    --bs-info-text-emphasis: #043578;
+
+    /* --bs-light: ;
+    --bs-light-rgb: ;
+    --bs-light-bg-subtle: ;
+    --bs-light-border-subtle: ;
+    --bs-light-text-emphasis: ;
+    --bs-dark: ;
+    --bs-dark-rgb: ;
+    --bs-dark-bg-subtle: ;
+    --bs-dark-border-subtle: ;
+    --bs-dark-text-emphasis: ; */
+
+    --color-primary-900: #091A7A;
+    --color-primary-800: #102693;
+    --color-primary-700: #1939B7;
+    --color-primary-600: #254EDB;
+    --color-primary-500: #3366FF;
+    --color-primary-400: #6690FF;
+    --color-primary-300: #84A9FF;
+    --color-primary-200: #ADC8FF;
+    --color-primary-100: #D6E4FF;
+
+    --color-success-900: #326904;
+    --color-success-800: #437F07;
+    --color-success-700: #5A9D0C;
+    --color-success-600: #73BC11;
+    --color-success-500: #90DB18;
+    --color-success-400: #B3E94D;
+    --color-success-300: #CCF471;
+    --color-success-200: #E3FBA1;
+    --color-success-100: #F2FDD0;
+
+    --color-info-900: #043578;
+    --color-info-800: #074B92;
+    --color-info-700: #0C69B5;
+    --color-info-600: #4c85a9;
+    --color-info-500: #19B4FC;
+    --color-info-400: #52D2FD;
+    --color-info-300: #74E4FE;
+    --color-info-200: #A2F3FE;
+    --color-info-100: #D0FCFE;
+
+    --color-warning-900: #7A480B;
+    --color-warning-800: #935D12;
+    --color-warning-700: #B77C1D;
+    --color-warning-600: #DB9C2A;
+    --color-warning-500: #FFC03A;
+    --color-warning-400: #FFD46B;
+    --color-warning-300: #FFE088;
+    --color-warning-200: #FFEDB0;
+    --color-warning-100: #FFF7D7;
+
+    --color-danger-900: #7A0927;
+    --color-danger-800: #930F27;
+    --color-danger-700: #B71827;
+    --color-danger-600: #DB2325;
+    --color-danger-500: #FF3E30;
+    --color-danger-400: #FF7B63;
+    --color-danger-300: #FF9F82;
+    --color-danger-200: #FFC6AC;
+    --color-danger-100: #FFE6D5;
+
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    height: calc(100% - var(--header-height));
+}
+
+html,
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.header__container {
+    width: 100%;
+    height: var(--header-height);
+
+    padding: 1rem 4rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.languages_selector__container {
+    display: flex;
+    align-items: center;
+
+    background-color: var(--color-primary-100);
+    border-radius: 2rem;
+}
+
+.languages_selector__content {
+    padding: 0.75rem;
+
+    font-weight: bold;
+
+    background-color: unset;
+    border: none;
+}
+
+.languages_selector__content:first-child,
+.languages_selector__content:last-child {
+    padding: 0.75rem 1.25rem;
+}
+
+.languages_selector__content.is-selected {
+    padding: 0.75rem 1.25rem;
+
+    height: 100%;
+
+    background-color: var(--color-primary-900);
+    border-radius: 2rem;
+    color: #fff;
+}
+
+.profile__link {
+    color: var(--color-primary-900);
+    font-weight: bold;
+}

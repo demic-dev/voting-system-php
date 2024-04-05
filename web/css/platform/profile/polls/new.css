@@ -1,0 +1,36 @@
+.form__container {
+    height: 100%;
+}
+
+.form__section {
+    padding: 2rem;
+}
+
+.form__heading {
+    margin-bottom: 2rem;
+
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--color-primary-900);
+}
+
+.form__heading.userlist {
+    font-size: 2rem;
+    text-align: right;
+}
+
+.form__input_container>div {
+    margin-bottom: 1.5rem;
+}
+
+.options__container>input {
+    margin-bottom: 0.5rem;
+} 
+
+.submit__container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+
+    padding: 2rem;
+}

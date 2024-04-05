@@ -1,0 +1,1 @@
+SPA: https://ilovecoding.org/courses/jquery/lessons/ajax-create-a-single-page-app-with-jquery
