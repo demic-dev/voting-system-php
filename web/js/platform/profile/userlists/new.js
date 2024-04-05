@@ -57,7 +57,7 @@ $("form").on('submit', function (e) {
     data.proxies = [];
 
     executeAjaxCall({
-        apiName: "new-userlist",
+        apiName: "create-userlist",
         method: "POST",
         data,
         successCallback: function (res) {

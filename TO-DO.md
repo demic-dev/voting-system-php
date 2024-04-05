@@ -21,11 +21,11 @@
   - [x] JS
   - [x] CSS
 - [ ] Poll
-  - [ ] JS
+  - [X] JS
   - [x] CSS
   - [ ] Proxy
-  - [ ] Crypted
-  - [X] Closed
+  - [X] Crypted
+  - [ ] Closed
 - [X] Your Profile
   - [X] JS
   - [X] CSS

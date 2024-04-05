@@ -2,7 +2,7 @@ import { executeAjaxCall } from '../../../utils.js';
 
 $(document).ready(function (e) {
     executeAjaxCall({
-        apiName: "get-polls-by-owner",
+        apiName: "polls-by-self",
         method: "GET",
         data: undefined,
         successCallback: function (res) {

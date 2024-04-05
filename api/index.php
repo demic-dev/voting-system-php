@@ -2,7 +2,13 @@
 
 require_once "config.php";
 require_once "utils.php";
-require_once "api_wrapper.php";
+
+require_once "./controller/index.php";
+
+require_once "./controller/get.php";
+require_once "./controller/update.php";
+require_once "./controller/delete.php";
+
 
 require_once "auth.php";
 require_once "poll.php";
@@ -16,7 +22,7 @@ header("Access-Control-Allow-Headers: *");
 date_default_timezone_set('Europe/Paris');
 
 /* REMOVING ERRORS IN API RESPONSE */
-error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
+error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING ^ E_NOTICE);
 
 $res = NULL;
 $REQUEST_METHOD = $_SERVER['REQUEST_METHOD'];
@@ -57,28 +63,29 @@ switch ($REQUEST_METHOD) {
                 $res = compose_api_response(true, $payload, 'get_userlist', $params_safety, $messages);
                 break;
 
-            case 'userlists-by-owner':
-                $res = compose_api_response(true, NULL, 'get_userlists_by_owner', [], array());
+            case 'userlists-by-self':
+                $res = compose_api_response(true, NULL, 'userlists_by_self', [], array());
                 break;
 
                 //endregion
 
                 //region polls
 
-            case 'get-polls-by-user':
+            case 'poll':
                 $messages = array();
-                $res = compose_api_response(true, NULL, 'get_polls_by_user', [], $messages);
+                $res = compose_api_response(true, $payload, 'get_poll', [], $messages);
                 break;
 
-            case 'get-polls-by-owner':
+            case 'polls-by-self':
                 $messages = array();
-                $res = compose_api_response(true, NULL, 'get_poll_by_owner', [], $messages);
+                $res = compose_api_response(true, NULL, 'get_polls_by_self', [], $messages);
                 break;
 
-            case 'get-poll':
+            case 'polls-per-user':
                 $messages = array();
-                $res = compose_api_response(true, $payload, 'get_poll_by_id', [], $messages);
+                $res = compose_api_response(true, NULL, 'get_polls_per_user', [], $messages);
                 break;
+
 
                 //endregion
 
@@ -146,23 +153,12 @@ switch ($REQUEST_METHOD) {
 
                 //region userlists
 
-            case 'new-userlist':
+            case 'create-userlist':
                 $messages = array(
                     '200' => "API_RESPONSES.new_userlist.200",
                     '400' => "API_RESPONSES.new_userlist.400",
                 );
                 $res = compose_api_response(true, $payload, 'create_userlist', [], $messages);
-                break;
-
-            case 'delete-userlist':
-                $params_safety = [['id', 'is_string']];
-                $messages = array(
-                    '200' => 'API_RESPONSES.delete_userlist.200',
-                    '400' => "API_RESPONSES.delete_userlist.400",
-                    '401' => "API_RESPONSES.delete_userlist.401",
-                    '404' => "API_RESPONSES.delete_userlist.404",
-                );
-                $res = compose_api_response(true, $payload, 'delete_userlist', $params_safety, $messages);
                 break;
 
             case 'edit-userlist':
@@ -174,6 +170,17 @@ switch ($REQUEST_METHOD) {
                     '404' => "API_RESPONSES.edit_userlist.404",
                 );
                 $res = compose_api_response(true, $payload, 'edit_userlist', $params_safety, $messages);
+                break;
+
+            case 'delete-userlist':
+                $params_safety = [['id', 'is_string']];
+                $messages = array(
+                    '200' => 'API_RESPONSES.delete_userlist.200',
+                    '400' => "API_RESPONSES.delete_userlist.400",
+                    '401' => "API_RESPONSES.delete_userlist.401",
+                    '404' => "API_RESPONSES.delete_userlist.404",
+                );
+                $res = compose_api_response(true, $payload, 'delete_userlist', $params_safety, $messages);
                 break;
 
                 //endregion
@@ -211,6 +218,10 @@ switch ($REQUEST_METHOD) {
                 );
                 $res = compose_api_response(true, $payload, 'delete_poll', [], $messages);
                 break;
+
+                //endregion
+
+                //region voting
 
             case 'close-poll':
                 $params_safety = [['id', 'is_string'], ['privateKey', 'is_string']];

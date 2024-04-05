@@ -6,12 +6,12 @@ const id = url.searchParams.get("id");
 
 $(document).ready(function (e) {
     executeAjaxCall({
-        apiName: "userlists-by-owner",
+        apiName: "userlists-by-self",
         method: "GET",
         data: undefined,
         successCallback: function (resUserlists) {
             executeAjaxCall({
-                apiName: "get-poll",
+                apiName: "poll",
                 method: "GET",
                 data: { id },
                 successCallback: function (resPoll) {

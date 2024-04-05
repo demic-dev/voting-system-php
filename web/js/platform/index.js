@@ -3,7 +3,7 @@ import { executeAjaxCall } from '../utils.js';
 
 $(document).ready(function (e) {
     executeAjaxCall({
-        apiName: "get-polls-by-user",
+        apiName: "polls-per-user",
         method: "GET",
         successCallback: function (res) {
             const data = JSON.parse(res.data);

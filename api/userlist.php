@@ -1,36 +1,119 @@
 <?php
 
+function get_mapping_callback()
+{
+    return function ($_, $v, $__) {
+        return array(
+            ...$v,
+            'owner' => get_item_from_file('id', $v['owner'], USERS),
+            'users' => get_items_from_file_bulk(USERS, function ($_, $v, $__) {
+                return in_array($v['id'], $v['users']);
+            }),
+            // add proxies
+            'proxies' => array(),
+        );
+    };
+}
+
 //region GET
 
-function api_userlist_by_owner(mixed $data)
+/**
+ * Retrieves a user list from the user lists file based on the specified user list ID.
+ *
+ * @param mixed $data The data containing the ID of the user list to retrieve.
+ * @return mixed Returns an associative array representing the found user list if successful, otherwise NULL.
+ */
+function get_userlist(mixed $data): mixed
 {
-    // $user_file = safely_open_json(USERS);
+    return get_item_from_file('id', $data['id'], USERLISTS, get_mapping_callback());
+}
 
-    // $res = array_map(function ($userlist) use ($user_file) {
-    //     return array(
-    //         ...$userlist,
-    //         'owner' => get_user(array('id' => $userlist['owner']), $user_file),
-    //         'users' => array_map(function ($user) use ($user_file) {
-    //             return get_user(array('id' => $user), $user_file);
-    //         }, $userlist['users']),
-    //         // add proxies
-    //         'proxies' => array(),
-    //     );
-    // }, $res);
+/**
+ * Retrieves user lists owned by the currently authenticated user.
+ *
+ * @return mixed Returns an array containing user lists owned by the currently authenticated user if successful, otherwise NULL.
+ */
+function userlists_by_self()
+{
+    $filter_callback = function ($k, $v, $_) {
+        return $v['owner'] !== $_SESSION['data']['id'];
+    };
+
+    return get_items_from_file_bulk(USERLISTS, $filter_callback, get_mapping_callback());
 }
 
 //endregion
 
 //region POST
 
-function api_edit_userlist(mixed $data)
+/**
+ * Creates a new user list with the provided data and stores it in the user lists file.
+ *
+ * @param mixed $data The data to create the user list with. Should be an associative array containing the following keys:
+ *                    - 'name': The name of the user list.
+ *                    - 'users': An array of user IDs associated with the user list.
+ *                    - 'proxies': An array of proxy IDs associated with the user list.
+ * @return mixed Returns an associative array representing the newly created user list if successful, otherwise NULL.
+ */
+function create_userlist(string $owner, mixed $data): mixed
+{
+    try {
+        $id = uniqid();
+        $name = $data['name'];
+        $users = $data['users'];
+        $proxies = $data['proxies'];
+
+        array_push($users, $owner);
+
+        $file = safely_open_json(USERLISTS);
+
+        $res = array(
+            'id' => $id,
+            'name' => $name,
+            'owner' => $owner,
+            'users' => $users,
+            'proxies' => $proxies,
+            ...set_data_log(),
+        );
+        array_push($file, $res);
+
+        if (safely_overwrite_json(USERLISTS, $file)) {
+            return $res;
+        };
+
+        return NULL;
+    } catch (Exception $e) {
+        return NULL;
+    }
+}
+
+/**
+ * Edits an existing user list with the provided data and updates it in the user lists file.
+ *
+ * @param mixed $data The data to edit the user list with. Should be an associative array containing the following keys:
+ *                    - 'id': The ID of the user list to edit.
+ *                    - Other keys represent the fields to update in the user list.
+ * @return mixed Returns the edited user list if successful, otherwise NULL.
+ */
+function edit_userlist(mixed $data): mixed
 {
     $id = $data['id'];
     unset($data['id']);
 
     array_push($data['users'], $_SESSION['data']['id']);
 
-    return __edit_userlist($id, $data);
+    return update_item_from_file($id, $data, USERLISTS);
+}
+
+/**
+ * Deletes the user list with the specified ID.
+ *
+ * @param mixed $data The data containing the ID of the user list to delete.
+ * @return mixed Returns true if the user list is successfully deleted, otherwise false.
+ */
+function delete_userlist(mixed $data): mixed
+{
+    return delete_item_from_file($data['id'], USERLISTS);
 }
 
 //endregion

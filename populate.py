@@ -44,7 +44,7 @@ userlist_number = 4
 userlists = []
 for n in range(userlist_number):
     userlist_request = requests.post(BASE_URL, json={
-        "API_NAME": "new-userlist",
+        "API_NAME": "create-userlist",
         "name": f"Userlist n. {n}",
         "users": bots[n:(n+1)*userlist_number],
         "proxies": []

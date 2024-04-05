@@ -87,7 +87,7 @@ function startCountdown(startDate, endDate) {
 
 $(document).ready(function (e) {
     executeAjaxCall({
-        apiName: 'get-poll',
+        apiName: 'poll',
         method: 'GET',
         data: { id },
         successCallback: function (res) {
