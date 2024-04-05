@@ -49,5 +49,5 @@
 ## Daily Goals for WEB
 
 - [X] Fare pagina Your Profile
-- [ ] Gestire sondaggio chiuso
+- [X] Gestire sondaggio chiuso
 - [ ] Implementare Private/Public Signature

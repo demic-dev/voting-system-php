@@ -212,6 +212,16 @@ switch ($REQUEST_METHOD) {
                 $res = compose_api_response(true, $payload, 'delete_poll', [], $messages);
                 break;
 
+            case 'close-poll':
+                $params_safety = [['id', 'is_string'], ['privateKey', 'is_string']];
+                $messages = array(
+                    '400' => "API_RESPONSES.update_poll.400",
+                    '401' => "API_RESPONSES.update_poll.401",
+                    '404' => "API_RESPONSES.update_poll.404",
+                );
+                $res = compose_api_response(true, $payload, 'close_voting', [], $messages);
+                break;
+
             case 'add-vote':
                 $params_safety = [];
                 $messages = array();

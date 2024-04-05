@@ -25,12 +25,15 @@ function add_vote(mixed $data): mixed
 
 function close_voting(mixed $data): mixed
 {
-    if ($poll = get_poll_by_id($data['poll'])) {
+    $file = safely_open_json(POLLS);
+
+    if ($poll = get_poll_by_id($data, $file)) {
         $private_key = $data['privateKey'];
         $decrypted_answer = "";
 
         foreach ($poll['votes'] as $_ => $value) {
-            $encrypted_answer = base64_decode($value['id']);
+            $encrypted_answer = base64_decode($value);
+
             if (openssl_private_decrypt($encrypted_answer, $decrypted_answer, $private_key)) {
                 $index = array_search($decrypted_answer, array_column($poll['options'], 'id'));
                 $poll['options'][$index]['count']++;
@@ -38,6 +41,8 @@ function close_voting(mixed $data): mixed
                 return NULL;
             }
         }
+
+        return ($res = update_in_file($data['id'], $poll, $file)) ? safely_overwrite_json(POLLS, $res) : NULL;
     }
 
     return NULL;

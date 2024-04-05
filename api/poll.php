@@ -50,12 +50,12 @@ function get_poll_by_id(mixed $data, mixed $file = NULL): mixed
     if (!isset($file)) {
         $file = safely_open_json(POLLS);
     }
-
     if ($res = find_in_file('id', $data['id'], $file)) {
         $users_file = safely_open_json(USERS);
 
         $res['owner'] = find_in_file('id', $res['owner'], $users_file);
         $res['has_voted'] = in_array($_SESSION['data']['id'], $res['voted_by']);
+
         return $res;
     }
 

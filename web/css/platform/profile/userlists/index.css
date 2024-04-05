@@ -53,3 +53,13 @@
     color: var(--color-primary-900);
     background-color: var(--color-primary-100);
 }
+
+.action.danger {
+    color: var(--color-danger-900);
+    background-color: var(--color-danger-100);
+}
+
+.action.success {
+    color: var(--color-success-900);
+    background-color: var(--color-success-100);
+}
