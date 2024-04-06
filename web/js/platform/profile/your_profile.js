@@ -12,9 +12,6 @@ $(document).ready(function (e) {
             $("#name").val(data.name);
             $("#surname").val(data.surname);
             $("#email").val(data.email);
-        },
-        errorCallback: function (err) {
-            console.log(err);
         }
     });
 });
@@ -65,9 +62,6 @@ $("form").on("submit", function (e) {
         data,
         successCallback: function (res) {
             window.location.href = "../";
-        },
-        errorCallback: function (err) {
-            console.log(err)
         }
     });
 });

@@ -48,6 +48,10 @@
     color: var(--color-danger-900);
 }
 
+.report__container {
+    width: 100%;
+}
+
 .keycode__container {
     width: 100%;
 
@@ -144,6 +148,16 @@
     color: var(--color-primary-100);
 }
 
+.option__letter.winner {
+    background-color: var(--color-success-100);
+    color: var(--color-success-900);
+}
+
+.option__letter.winner:hover {
+    background-color: var(--color-success-900);
+    color: var(--color-success-100);
+}
+
 .option__label {
     width: 100%;
 
@@ -155,6 +169,11 @@
 
     color: var(--color-primary-900);
     font-size: 1rem;
+}
+
+.option__label.winner {
+    border: 2px solid var(--color-success-900);
+    color: var(--color-success-900);
 }
 
 .cta {

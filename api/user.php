@@ -1,10 +1,68 @@
 <?php
 
+//region GET
+
 /**
- * Function invoked to register a new user in the system.
- * 200 if successful sign up, 400 otherwise.
- * @param mixed $data The user object sent from the client.
- * @return string|null Created user object.
+ * Retrieves a user from the users file based on the specified user ID and removes the sensitive fields.
+ *
+ * @param mixed $data The data containing the user ID to retrieve.
+ * @return mixed Returns an associative array representing the found user if successful, otherwise NULL.
+ */
+function get_user(mixed $data): mixed
+{
+    $mapping_callback = function ($user) {
+        unset($user['password']);
+
+        return $user;
+    };
+
+    return get_item_from_file('id', $data['id'], USERS, $mapping_callback);
+}
+
+/**
+ * Retrieves the user data for the currently authenticated user.
+ *
+ * @return mixed Returns an associative array representing the user data if successful, otherwise NULL.
+ */
+
+function get_self(): mixed
+{
+    $data = array('id' => $_SESSION['data']['id']);
+    return get_user($data);
+}
+
+/**
+ * Retrieves user data for all users except the currently authenticated user.
+ *
+ * @return mixed Returns an array containing user data for all users except the currently authenticated user if successful, otherwise NULL.
+ */
+function get_users_without_self(): mixed
+{
+    $filter_callback = function ($k, $v, $_) {
+        return $v['id'] !== $_SESSION['data']['id'];
+    };
+
+    $mapping_callback = function ($_, $v, $__) {
+        unset($v['password']);
+        return $v;
+    };
+
+    return get_items_from_file_bulk(USERS, $filter_callback, $mapping_callback);
+}
+
+//endregion
+
+//region POST
+
+/**
+ * Creates a new user with the provided data and stores it in the users file.
+ *
+ * @param mixed $data The data to create the user with. Should be an associative array containing the following keys:
+ *                    - 'name': The first name of the user.
+ *                    - 'surname': The last name of the user.
+ *                    - 'email': The email address of the user.
+ *                    - 'password': The password of the user.
+ * @return mixed Returns an associative array representing the newly created user if successful, otherwise NULL.
  */
 function create_user(mixed $data): mixed
 {
@@ -41,94 +99,42 @@ function create_user(mixed $data): mixed
 }
 
 /**
- * @return mixed Return the user object of the authenticated user.
+ * Edits the user data for the currently authenticated user.
+ *
+ * @param mixed $data The data to edit the user with. Should be an associative array containing the following keys:
+ *                    - 'id': The ID of the currently authenticated user.
+ *                    - Other keys represent the fields to update in the user.
+ *                    - 'password': Optional. The new password of the user. Leave empty if not updating.
+ *                    - 'confirm_password': Optional. Unused field, included for form submission.
+ * @return mixed Returns the edited user data if successful, otherwise NULL.
  */
-function get_self(): mixed
-{
-    return get_user(array('id' => $_SESSION['data']['id']));
-}
-
-/**
- * Invoked to get the user data, given his email.
- * @param string $key PK of the user to get.
- * @param string $value PK's value of the user to get.
- * @param mixed $users_file [OPTIONAL] the users array in case of batch operations, to not open the file _n_ times.
- * @return mixed user's object if present, NULL otherwise.
- */
-function get_user(mixed $data, mixed $users_file = NULL): mixed
-{
-
-    try {
-        if (!isset($users_file)) {
-            $users_file = safely_open_json(USERS);
-        }
-
-        if ($res = find_in_file('id', $data['id'], $users_file)) {
-            unset($res['password']);
-            return $res;
-        }
-
-        return NULL;
-    } catch (Exception $e) {
-        return NULL;
-    }
-}
-
-/**
- * Invoked to update user's info on the db.
- * @param string $id id of the user to update.
- * @param mixed $data fields to update.
- * @return mixed update user object.
- */
-function edit_user(mixed $data): mixed
+function edit_self(mixed $data): mixed
 {
     $id = $data['id'];
     unset($data['id']);
 
-    $file = safely_open_json(USERS);
-
     if ($data['password'] === "") {
         unset($data['password']);
+    } else {
+        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
     }
 
     unset($data['confirm_password']);
 
-    if ($res = update_in_file($id, $data, $file)) {
-        safely_overwrite_json(USERS, $res);
-
-        return $res;
-    }
-
-    return NULL;
+    return update_item_from_file($id, $data, USERS);
 }
 
-function edit_self(mixed $data): mixed
+/**
+ * Deletes the user with the specified ID.
+ *
+ * @param mixed $data The data containing the ID of the user to delete.
+ * @return mixed Returns true if the user is successfully deleted, otherwise false.
+ */
+
+function delete_user(mixed $data): mixed
 {
-    $payload = array(...$data, 'id' => $_SESSION['data']['id']);
-
-    if (edit_user($payload)) {
-        $res = get_user($payload);
-        $_SESSION['data'] = $res;
-
-        return $res;
-    }
-
-
-    return NULL;
+    return delete_item_from_file($data['id'], USERS);
 }
 
 
-function get_users_without_self(): mixed
-{
-    $file = safely_open_json(USERS);
-
-    foreach ($file as $index => $user) {
-        if ($user['id'] === $_SESSION['data']['id']) {
-            unset($file[$index]);
-        } else {
-            unset($user['password']);
-        }
-    }
-
-    return $file;
-}
+//endregion

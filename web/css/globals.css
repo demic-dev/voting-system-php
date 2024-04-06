@@ -120,6 +120,7 @@ html {
 
 body {
     height: calc(100% - var(--header-height));
+    background-color: #fafafa;
 }
 
 html,
@@ -128,6 +129,8 @@ html,
     padding: 0;
     box-sizing: border-box;
 }
+
+/* header */
 
 .header__container {
     width: 100%;
@@ -175,4 +178,29 @@ html,
 .profile__link {
     color: var(--color-primary-900);
     font-weight: bold;
+}
+
+/* empty state */
+
+.empty_state__container {
+    width: 100%;
+    min-height: 8rem;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+
+    text-align: center;
+    font-size: 4rem;
+}
+
+/* toast */
+
+.toast__position {
+    position: absolute;
+    bottom: 4rem;
+    right: 4rem;
+
+    padding: 1rem 0.5rem;
 }

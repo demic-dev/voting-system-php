@@ -1,6 +1,16 @@
 <?php
 
 /**
+ * Used for PARAM_SAFETY_FUNCTION, checks if is an email or not
+ * @param string $email The email string to check.
+ * @return bool If it's an email or not.
+ */
+function is_email(string $email): bool
+{
+    return !!filter_var($email, FILTER_VALIDATE_EMAIL);
+}
+
+/**
  * Check if the params are well defined as they should.
  * @param mixed $data The params.
  * @param array $keys The array of mandatory params with their type: [[name, func], [name, func], ...].
@@ -17,111 +27,83 @@ function check_params(mixed $data, array $keys): bool
 }
 
 /**
- * Opens in a safe context the file and returns it.
- * @param string $filepath The file path.
- * @return mixed|null The file array if exist.
+ * Parse the API response based on the HTTP code.
+ * @param int $code The HTTP Status Code.
+ * @param string $message OPTIONAL The custom message to return.
+ * @return array The associative array with code and message.
  */
-function safely_open_json(string $filepath): mixed
+function get_code_and_message(int $code, string|null $message = '')
 {
-    try {
-        $file = file_get_contents($filepath);
-        $data = json_decode($file, true);
-
-        return $data;
-    } catch (Exception $e) {
-        return NULL;
-    }
-}
-
-/**
- * Opens in a safe context the file and updates it.
- * @param string $filepath The file path.
- * @param mixed $data The updated file data.
- * @return bool The update outcome.
- */
-function safely_overwrite_json(string $filepath, mixed $data)
-{
-    try {
-        $jsonEncoded = json_encode($data);
-        if (file_put_contents($filepath, $jsonEncoded)) {
-            return true;
+    if (!$message) {
+        switch ($code) {
+            case 200:
+                $message = 'Action successfully performed.';
+                break;
+            case 400:
+                $message = 'Error: Bad Request.';
+                break;
+            case 401:
+                $message = 'Error: You must be logged in to view this.';
+                break;
+            case 403:
+                $message = 'Error: You are not able to view this.';
+                break;
+            case 404:
+                $message = 'Error: API Not Found.';
+                break;
+            case 500:
+                $message = 'Error: Internal Server Error';
+                break;
         }
-
-        return false;
-    } catch (Exception $e) {
-        return false;
-    }
-}
-
-/**
- * When called, the function returns the updated time as log in the database.
- * @param bool $only_update flag to specify if it has to return only the update time.
- * @return mixed the array with the iso date of the update.
- */
-function set_data_log(bool $only_update = false): mixed
-{
-    $now = (new DateTime())->format(DateTime::ATOM);
-    if ($only_update) {
-        return array(
-            UPDATED_AT => $now,
-        );
     }
 
+    http_response_code($code);
     return array(
-        CREATED_AT => $now,
-        UPDATED_AT => $now,
+        'code' => $code,
+        'message' => $message,
     );
 }
 
 /**
- * When invoked it search for the user object inside the array passed.
- * @param string $key The PK of the user to find.
- * @param string $value Value of the PK of the user to find.
- * @param mixed $filecontent The array fetched from the json file.
- * @return mixed|null The object if the element is found, NULL otherwise.
+ * @param bool $is_protected Is the API available only to authenticated users?
+ * @param mixed $params The params of the function.
+ * @param mixed $callback The function that perform the action requested from the API.
+ * @param mixed $params_safety_check The array of mandatory params with their type: [[name, func], [name, func], ...].
+ * @param string $message OPTIONAL - A custom message to return
+ * @return mixed The response with the format { code: number, message: string, data: mixed }
  */
-function find_in_file(string $key, string $value, mixed $filecontent): mixed
+function compose_api_response(bool $is_protected, mixed $params, mixed $callback, array $params_safety_check = NULL, mixed $messages = array()): mixed
 {
-    $idx = array_search($value, array_column($filecontent, $key));
+    try {
+        /* Start the session if the API is authenticated. */
+        if ($is_protected && session_start() && !isset($_SESSION['data'])) {
+            return get_code_and_message(401);
+        }
 
-    if ($idx !== False) {
-        return $filecontent[$idx];
-    }
+        /* Perform the check on the params passed to the function. If some data is missing, then return a 400 error. */
+        if (isset($params_safety_check) && !check_params($params, $params_safety_check)) {
+            return get_code_and_message(400, $messages['400']);
+        }
 
-    return NULL;
-}
+        /* The actual action performed. */
+        $res = $callback($params);
 
-/**
- * Search for the user in the file and it updates his info.
- * 
- * @param string $id The PK.
- * @param mixed $data The data to update.
- * @param mixed $filecontent The file array.
- * @return mixed|null The updated object.
- */
-function update_in_file(string $id, mixed $data, mixed $filecontent): mixed
-{
-    $idx = array_search($id, array_column($filecontent, 'id'));
-
-    if ($idx !== False) {
-        $filecontent[$idx] = array(
-            ...$filecontent[$idx],
-            ...set_data_log(true),
-            ...$data,
+        if (is_array($res)) {
+            return array(
+                ...get_code_and_message(200, $messages['200']),
+                'data' => json_encode($res),
+            );
+        } else if (is_numeric($res)) {
+            return get_code_and_message($res, $messages[$res]);
+        } else if ($res === True) {
+            return get_code_and_message(200, $messages['200']);
+        } else if ($res === NULL) {
+            return get_code_and_message(404, $messages['404']);
+        }
+    } catch (Exception $e) {
+        return array(
+            ...get_code_and_message(500),
+            'data' => json_encode($e),
         );
-
-        return $filecontent;
     }
-
-    return NULL;
-}
-
-/**
- * Used for PARAM_SAFETY_FUNCTION, checks if is an email or not
- * @param string $email The email string to check.
- * @return bool If it's an email or not.
- */
-function is_email(string $email): bool
-{
-    return !!filter_var($email, FILTER_VALIDATE_EMAIL);
 }

@@ -1,38 +1,110 @@
 <?php
 
+//region GET
+
 /**
- * Function invoked to register a new user list in the system.
- * 200 if successful sign up, 400 otherwise.
- * @param mixed $user_data The user object sent from the client.
- * @return string status message of the operation.
+ * Retrieves a user list from the user lists file based on the specified user list ID.
+ *
+ * @param mixed $data The data containing the ID of the user list to retrieve.
+ * @return mixed Returns an associative array representing the found user list if successful, otherwise NULL.
+ */
+function get_userlist(mixed $data): mixed
+{
+    $mapping_callback = function ($userlist) {
+        return array(
+            ...$userlist,
+            'owner' => get_item_from_file('id', $userlist['owner'], USERS),
+            'users' => get_items_from_file_bulk(USERS, function ($_, $user, $__) use ($userlist) {
+                return in_array($user['id'], $userlist['users']);
+            }),
+            // add proxies
+            'proxies' => array(),
+        );
+    };
+
+    return get_item_from_file('id', $data['id'], USERLISTS, $mapping_callback);
+}
+
+/**
+ * Retrieves user lists owned by the currently authenticated user.
+ *
+ * @return mixed Returns an array containing user lists owned by the currently authenticated user if successful, otherwise NULL.
+ */
+function userlists_by_self()
+{
+    $filter_callback = function ($k, $v, $_) {
+        return $v['owner'] === $_SESSION['data']['id'];
+    };
+
+    $mapping_callback = function ($_, $userlist) {
+        return array(
+            ...$userlist,
+            'owner' => get_item_from_file('id', $userlist['owner'], USERS),
+            'users' => get_items_from_file_bulk(USERS, function ($_, $user, $__) use ($userlist) {
+                return in_array($user['id'], $userlist['users']);
+            }),
+            // add proxies
+            'proxies' => array(),
+        );
+    };
+
+    return get_items_from_file_bulk(USERLISTS, $filter_callback, $mapping_callback);
+}
+
+//endregion
+
+//region POST
+
+/**
+ * Creates a new user list with the provided data and stores it in the user lists file.
+ *
+ * @param mixed $data The data to create the user list with. Should be an associative array containing the following keys:
+ *                    - 'name': The name of the user list.
+ *                    - 'users': An array of user IDs associated with the user list.
+ *                    - 'proxies': An array of proxy IDs associated with the user list.
+ * @return mixed Returns an associative array representing the newly created user list if successful, otherwise NULL.
  */
 function create_userlist(mixed $data): mixed
 {
-    $id = uniqid();
-    $name = $data['name'];
-    $owner = $_SESSION['data']['id'];
-    $users = $data['users'];
-    $proxies = $data['proxies'];
+    try {
+        $id = uniqid();
+        $name = $data['name'];
+        $users = $data['users'];
+        $owner = $_SESSION['data']['id'];
+        $proxies = $data['proxies'];
 
-    array_push($users, $owner);
+        array_push($users, $owner);
 
-    $file = safely_open_json(USERLISTS);
+        $file = safely_open_json(USERLISTS);
 
-    $res = array(
-        'id' => $id,
-        'name' => $name,
-        'owner' => $owner,
-        'users' => $users,
-        'proxies' => $proxies,
-        ...set_data_log(),
-    );
-    array_push($file, $res);
+        $res = array(
+            'id' => $id,
+            'name' => $name,
+            'owner' => $owner,
+            'users' => $users,
+            'proxies' => $proxies,
+            ...set_data_log(),
+        );
+        array_push($file, $res);
 
-    safely_overwrite_json(USERLISTS, $file);
+        if (safely_overwrite_json(USERLISTS, $file)) {
+            return $res;
+        };
 
-    return $res;
+        return NULL;
+    } catch (Exception $e) {
+        return NULL;
+    }
 }
 
+/**
+ * Edits an existing user list with the provided data and updates it in the user lists file.
+ *
+ * @param mixed $data The data to edit the user list with. Should be an associative array containing the following keys:
+ *                    - 'id': The ID of the user list to edit.
+ *                    - Other keys represent the fields to update in the user list.
+ * @return mixed Returns the edited user list if successful, otherwise NULL.
+ */
 function edit_userlist(mixed $data): mixed
 {
     $id = $data['id'];
@@ -40,79 +112,18 @@ function edit_userlist(mixed $data): mixed
 
     array_push($data['users'], $_SESSION['data']['id']);
 
-    $file = safely_open_json(USERLISTS);
-
-    if ($res = update_in_file($id, $data, $file)) {
-        if (safely_overwrite_json(USERLISTS, $res)) {
-            return $res;
-        };
-
-        return NULL;
-    }
-
-    return NULL;
+    return update_item_from_file($id, $data, USERLISTS);
 }
 
 /**
- * When called, this function returns the user's object.
- * 
- * @param string $id The userlist PK to find in the file.
- * @param mixed $file [OPTIONAL]: When performing batch operations. To avoid opening the file multiple times.
- * @return string|null User object.
+ * Deletes the user list with the specified ID.
+ *
+ * @param mixed $data The data containing the ID of the user list to delete.
+ * @return mixed Returns true if the user list is successfully deleted, otherwise false.
  */
-function get_userlist(mixed $data, mixed $file = NULL): mixed
+function delete_userlist(mixed $data): mixed
 {
-    if (!isset($file)) {
-        $file = safely_open_json(USERLISTS);
-    }
-
-    if ($res = find_in_file('id', $data['id'], $file)) {
-        return $res;
-    }
-
-    return NULL;
+    return delete_item_from_file($data['id'], USERLISTS);
 }
 
-/**
- * When called, this function returns all the userlists made by the selected user.
- * 
- * @param string $id The userlist's owner (Who made the list).
- * @return string An array of userlists.
- */
-function get_userlists_by_owner(): mixed
-{
-    $owner = $_SESSION['data']['id'];
-    $file = safely_open_json(USERLISTS);
-    $user_file = safely_open_json(USERS);
-
-    $res = array_filter($file, function ($v, $_) use ($owner) {
-        return $v['owner'] == $owner;
-    }, ARRAY_FILTER_USE_BOTH);
-
-    $res = array_map(function ($userlist) use ($user_file) {
-        return array(
-            ...$userlist,
-            'owner' => get_user(array('id' => $userlist['owner']), $user_file),
-            'users' => array_map(function ($user) use ($user_file) {
-                return get_user(array('id' => $user), $user_file);
-            }, $userlist['users']),
-            // add proxies
-            'proxies' => array(),
-        );
-    }, $res);
-
-    return $res;
-}
-
-function delete_userlist(mixed $data): bool
-{
-    $file = safely_open_json(USERLISTS);
-
-    if (($index = array_search($data['id'], array_column($file, 'id'))) && $index !== False) {
-        unset($file[$index]);
-
-        return safely_overwrite_json(USERLISTS, $file);
-    };
-
-    return false;
-}
+//endregion

@@ -22,9 +22,3 @@ function login(mixed $data): mixed
 
     return 401;
 }
-
-
-function logout(): bool
-{
-    return session_unset() && session_destroy();
-}

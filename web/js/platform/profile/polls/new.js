@@ -2,7 +2,7 @@ import { executeAjaxCall } from '../../../utils.js';
 
 $(document).ready(function (e) {
     executeAjaxCall({
-        apiName: "userlists-by-owner",
+        apiName: "userlists-by-self",
         method: "GET",
         data: undefined,
         successCallback: function (res) {
@@ -13,10 +13,6 @@ $(document).ready(function (e) {
                 $(option).text(userlist.name);
                 $("#userlist").append(option);
             }
-        },
-        errorCallback: function (err) {
-            // Silent error, shown only in console.
-            console.log(err);
         }
     });
 });
@@ -109,12 +105,6 @@ $("form").on('submit', function (e) {
 
 
             window.location.href = "/web/platform/";
-        },
-        errorCallback: function (err) {
-            $("#response").removeClass("d-none");
-            $("#response").addClass("alert-danger");
-
-            $("#response").text(getTranslation(err.responseText?.message));
         }
     });
 });

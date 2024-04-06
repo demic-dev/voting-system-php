@@ -16,16 +16,23 @@ $(document).ready(function (e) {
                 $(elt).append("<button type=\"button\" class=\"user__icon add-user\"><i class=\"bi bi-plus\"></i></button>");
                 $("#all-users").append(elt);
             }
-        },
-        errorCallback: function (err) {
-            console.log(err);
         }
     });
 });
 
+// remove from selected
+$("#selected-users").delegate("button", "click", function (e) {
+    const selectedUser = $(e.currentTarget).parent();
+
+    $(e.currentTarget).children('i').toggleClass('bi-trash-fill bi-plus');
+    $("#all-users").append(selectedUser);
+});
+
+// add to selected
 $("#all-users").delegate("button", "click", function (e) {
     const selectedUser = $(e.currentTarget).parent();
 
+    $(e.currentTarget).children('i').toggleClass('bi-plus bi-trash-fill');
     $("#selected-users").append(selectedUser);
 })
 
@@ -57,17 +64,11 @@ $("form").on('submit', function (e) {
     data.proxies = [];
 
     executeAjaxCall({
-        apiName: "new-userlist",
+        apiName: "create-userlist",
         method: "POST",
         data,
         successCallback: function (res) {
             window.location.href = "/web/platform/profile/userlists/";
         },
-        errorCallback: function (err) {
-            $("#response").removeClass("d-none");
-            $("#response").addClass("alert-danger");
-
-            $("#response").text(getTranslation(res.responseText?.message));
-        }
     });
 });

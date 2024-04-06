@@ -11,6 +11,121 @@ function __create_options(array $options): mixed
     }, array_keys($options), $options);
 }
 
+//region GET
+
+/**
+ * Retrieves a poll from the polls file based on the specified poll ID and maps additional data such as owner information and whether the current user has voted.
+ *
+ * @param mixed $data The data containing the ID of the poll to retrieve.
+ * @return mixed Returns an associative array representing the found poll with additional mapped data if successful, otherwise NULL.
+ */
+function get_poll(mixed $data): mixed
+{
+    $mapping_callback = function ($poll) {
+        $userlist = get_userlist(array('id' => $poll['userlist']));
+
+        $poll['owner'] = get_user(array('id' => $poll['owner']));
+        $poll['has_voted'] = in_array($_SESSION['data']['id'], $poll['voted_by']);
+
+        $poll['users'] = count($userlist['users']);
+        $poll['voted_by'] = count($poll['voted_by']);
+
+        return $poll;
+    };
+
+    return get_item_from_file('id', $data['id'], POLLS, $mapping_callback);
+}
+
+/**
+ * Retrieves polls owned by the currently authenticated user and maps additional data such as owner information and whether the current user has voted.
+ *
+ * @return mixed Returns an array containing polls owned by the currently authenticated user with additional mapped data if successful, otherwise NULL.
+ */
+function get_polls_by_self(): mixed
+{
+    $filter_callback = function ($_, $v) {
+        return $v['owner'] === $_SESSION['data']['id'];
+    };
+    $mapping_callback = function ($_, $poll) {
+        $userlist = get_userlist(array('id' => $poll['userlist']));
+
+        $poll['userlist'] = $userlist;
+        $poll['owner'] = get_user(array('id' => $poll['owner']));
+        $poll['has_voted'] = in_array($_SESSION['data']['id'], $poll['voted_by']);
+
+        $poll['users'] = count($userlist['users']);
+        $poll['voted_by'] = count($poll['voted_by']);
+
+        return $poll;
+    };
+    /* TO-DO: USERS DETAILS (authorised_users) */
+
+    return get_items_from_file_bulk(POLLS, $filter_callback, $mapping_callback);
+}
+
+/**
+ * Retrieves polls belonging to the currently authenticated user, categorized into active and ended polls, and maps additional data such as owner information and whether the current user has voted.
+ *
+ * @return mixed Returns an array containing active and ended polls belonging to the currently authenticated user with additional mapped data if successful, otherwise NULL.
+ */
+function get_polls_per_user(): mixed
+{
+    $user_id = $_SESSION['data']['id'];
+
+    $filter_callback_active = function ($_, $v) use ($user_id) {
+        // I search for the polls where the user is in the list and that are active.
+        return ($userlist = get_userlist(array('id' => $v['userlist'])))
+            && in_array($user_id, array_column($userlist['users'], 'id'))
+            && strtotime(date($v['due_date'])) >= time();
+    };
+    $filter_callback_ended = function ($_, $v) use ($user_id) {
+        // I search for the polls where the user is in the list and that are inactive.
+        return ($userlist = get_userlist(array('id' => $v['userlist'])))
+            && in_array($user_id, array_column($userlist['users'], 'id'))
+            && strtotime(date($v['due_date'])) < time();
+    };
+
+    $mapping_callback = function ($_, $poll) {
+        $userlist = get_userlist(array('id' => $poll['userlist']));
+
+        $poll['owner'] = get_user(array('id' => $poll['owner']));
+        $poll['has_voted'] = in_array($_SESSION['data']['id'], $poll['voted_by']);
+
+
+        $poll['users'] = count($userlist['users']);
+        $poll['voted_by'] = count($poll['voted_by']);
+
+        return $poll;
+    };
+
+    $active_polls = get_items_from_file_bulk(POLLS, $filter_callback_active, $mapping_callback);
+    $ended_polls = get_items_from_file_bulk(POLLS, $filter_callback_ended, $mapping_callback);
+
+    /* TO-DO: USERS DETAILS (authorised_users) */
+
+    return array(
+        'active_polls' => $active_polls,
+        'ended_polls' => $ended_polls,
+    );
+}
+
+//endregion
+
+//region POST
+
+/**
+ * Creates a new poll with the provided data and stores it in the polls file.
+ *
+ * @param mixed $data The data to create the poll with. Should be an associative array containing the following keys:
+ *                    - 'name': The name of the poll.
+ *                    - 'description': The description of the poll.
+ *                    - 'options': An array containing options for the poll.
+ *                    - 'public_key': The public key associated with the poll.
+ *                    - 'start_date': The start date of the poll in ISO format (e.g., 2024-03-14T08:20:40.345Z).
+ *                    - 'due_date': The due date of the poll in ISO format (e.g., 2024-03-14T08:20:40.345Z).
+ *                    - 'userlist': The ID of the user list associated with the poll.
+ * @return mixed Returns an associative array representing the newly created poll if successful, otherwise NULL.
+ */
 function create_poll(mixed $data): mixed
 {
     $id = uniqid();
@@ -37,6 +152,7 @@ function create_poll(mixed $data): mixed
         'userlist' => $userlist,
         'voted_by' => array(),
         'votes' => [],
+        'closed' => false,
         ...set_data_log(),
     );
     array_push($file, $res);
@@ -45,84 +161,20 @@ function create_poll(mixed $data): mixed
     return $res;
 }
 
-function get_poll_by_id(mixed $data, mixed $file = NULL): mixed
-{
-    if (!isset($file)) {
-        $file = safely_open_json(POLLS);
-    }
-
-    if ($res = find_in_file('id', $data['id'], $file)) {
-        $users_file = safely_open_json(USERS);
-
-        $res['owner'] = find_in_file('id', $res['owner'], $users_file);
-        $res['has_voted'] = in_array($_SESSION['data']['id'], $res['voted_by']);
-        return $res;
-    }
-
-    return NULL;
-}
-
-function get_poll_by_owner(): mixed
-{
-    $file = safely_open_json(POLLS);
-    $userlists_file = safely_open_json(USERLISTS);
-    $users_file = safely_open_json(USERS);
-    $owner = $_SESSION['data']['id'];
-
-    $res = [];
-
-    foreach ($file as $_ => $value) {
-        if ($value['owner'] === $owner) {
-            $value['owner'] = find_in_file('id', $value['owner'], $users_file);
-            $value['userlist'] = find_in_file('id', $value['userlist'], $userlists_file);
-
-            array_push($res, $value);
-        }
-    }
-
-    /* TO-DO: USERS DETAILS (authorised_users) */
-
-    return $res;
-}
-
-function get_polls_by_user(): mixed
-{
-    $file = safely_open_json(POLLS);
-    $userlists_file = safely_open_json(USERLISTS);
-    $users_file = safely_open_json(USERS);
-    $user_id = $_SESSION['data']['id'];
-
-    $active_polls = [];
-    $ended_polls = [];
-
-    foreach ($file as $_ => $value) {
-        if (($userlist = find_in_file('id', $value['userlist'], $userlists_file)) && in_array($user_id, $userlist['users'])) {
-            $value['owner'] = find_in_file('id', $value['owner'], $users_file);
-            if (strtotime(date($value['due_date'])) >= time()) {
-                array_push($active_polls, $value);
-            } else {
-                array_push($ended_polls, $value);
-            }
-        }
-    }
-
-    /* TO-DO: USERS DETAILS (authorised_users) */
-
-    return array(
-        'active_polls' => $active_polls,
-        'ended_polls' => $ended_polls,
-    );
-}
-
+/**
+ * Edits an existing poll with the provided data and updates it in the polls file.
+ *
+ * @param mixed $data The data to edit the poll with. Should be an associative array containing the following keys:
+ *                    - 'id': The ID of the poll to edit.
+ *                    - Other keys represent the fields to update in the poll.
+ * @return mixed Returns the edited poll if successful, otherwise NULL.
+ */
 function edit_poll(mixed $data): mixed
 {
-    $file = safely_open_json(POLLS);
-
-
     $id = $data['id'];
     unset($data['id']);
 
-    if ($old = find_in_file('id', $id, $file)) {
+    if ($old = get_item_from_file('id', $id, POLLS)) {
         foreach ($data as $k => $v) {
             // I'm looking for difference between the old options and the new one. I add/remove only the different ones.
             if ($k === 'options') {
@@ -152,24 +204,22 @@ function edit_poll(mixed $data): mixed
                 unset($data[$k]);
             }
         }
-    }
 
-    if ($res = update_in_file($id, $data, $file)) {
-        return safely_overwrite_json(POLLS, $res) ? $res : NULL;
+        return update_item_from_file($id, $data, POLLS);
     }
 
     return NULL;
 }
 
+/**
+ * Deletes the poll with the specified ID.
+ *
+ * @param mixed $data The data containing the ID of the poll to delete.
+ * @return mixed Returns true if the poll is successfully deleted, otherwise false.
+ */
 function delete_poll(mixed $data): mixed
 {
-    $file = safely_open_json(POLLS);
-
-    if (($index = array_search($data['id'], array_column($file, 'id'))) && $index !== False) {
-        unset($file[$index]);
-
-        return safely_overwrite_json(POLLS, $file);
-    };
-
-    return false;
+    return delete_item_from_file($data['id'], POLLS);
 }
+
+//endregion

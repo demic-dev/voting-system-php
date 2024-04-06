@@ -1,4 +1,4 @@
-import { getCurrentLanguage } from "./translations/index.js";
+import { getCurrentLanguage, getTranslation } from "./translations/index.js";
 
 export function isEmailValid(email) {
     return String(email)
@@ -17,35 +17,37 @@ export function executeAjaxCall(options = {
 }) {
     const url = "http://localhost:9000/api/index.php";
 
-    if (options.method === "GET") {
-        $.ajax({
-            url: url + `?API_NAME=${options.apiName}`,
-            type: options.method,
-            method: options.method,
-            contentType: "application/json",
-            dataType: "json",
-            data: $.param(options.data),
-            processData: false,
-        })
-            .done(options.successCallback)
-            .fail(options.errorCallback);
-    } else if (options.method === "POST") {
+    $.ajax({
+        url: url + ((options.method === 'GET') ? `?API_NAME=${options.apiName}` : ''),
+        type: options.method,
+        method: options.method,
+        contentType: "application/json",
+        dataType: "json",
+        data: options.method === 'GET' ? $.param(options.data) : JSON.stringify({
+            ...options.data,
+            "API_NAME": options.apiName,
+        }),
+        processData: false,
+    }).done(function (res) {
+        if (options.successCallback) {
+            options.successCallback(res);
+        } else {
+            const toastBootstrap = bootstrap.Toast.getOrCreateInstance($("#toast"));
+            $("#toast").addClass('text-bg-success');
+            $("#toast-body").text(res.code);
+            toastBootstrap.show();
+        }
+    })
+        .fail(function (err) {
+            if (options.errorCallback) {
+                options.errorCallback(err);
+            }
 
-        $.ajax({
-            url,
-            type: options.method,
-            method: options.method,
-            contentType: "application/json",
-            dataType: "json",
-            data: JSON.stringify({
-                ...options.data,
-                "API_NAME": options.apiName,
-            }),
-            processData: false,
-        })
-            .done(options.successCallback)
-            .fail(options.errorCallback);
-    }
+            const toastBootstrap = bootstrap.Toast.getOrCreateInstance($("#toast"));
+            $("#toast-body").text(JSON.parse(err.responseText).message);
+            $("#toast").addClass('text-bg-danger');
+            toastBootstrap.show();
+        });
 }
 
 /**

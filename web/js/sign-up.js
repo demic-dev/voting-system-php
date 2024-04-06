@@ -72,10 +72,6 @@ $("form").on('submit', function (e) {
         errorCallback: function (err) {
             $("#spinner").addClass("d-none");
             $("#submit").prop("disabled", false);
-            $("#response-container").removeClass("d-none");
-            $("#response-container").removeClass("alert-success");
-            $("#response-container").addClass("alert-danger");
-            $("#response-container").text(getTranslation(err?.responseJSON?.message));
         }
     });
 

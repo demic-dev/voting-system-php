@@ -34,6 +34,9 @@
             </div>
         </div>
 
+        <div class="alert alert-success report__container d-none" id="poll_closed__container" role="alert">
+        </div>
+
         <div class="alert alert-light keycode__container" role="alert">
             <span class="keycode__label" data-translation="LABELS.vote.public_key"></span>
             <code class="keycode__value" id="public_key"></code>

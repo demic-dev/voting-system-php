@@ -4,7 +4,6 @@
 
 - [ ] API PROXY
 - [ ] Poll Update fix options
-- [X] Throw errors sia nelle funzioni di utils, sia nelle varie API.
 
 ## Frontend
 
@@ -14,29 +13,29 @@
 - Sign Up
   - [x] JS
   - [x] CSS
-- [X] Dashboard
-  - [X] JS
+- [x] Dashboard
+  - [x] JS
   - [x] CSS
 - [x] New Poll
   - [x] JS
   - [x] CSS
 - [ ] Poll
-  - [ ] JS
+  - [x] JS
   - [x] CSS
   - [ ] Proxy
-  - [ ] Crypted
+  - [x] Crypted
   - [X] Closed
-- [X] Your Profile
-  - [X] JS
-  - [X] CSS
+- [x] Your Profile
+  - [x] JS
+  - [x] CSS
 - [x] New Userlist
   - [x] JS
   - [x] CSS
-- [X] Your Polls
-  - [X] JS
-  - [X] CSS
-- [X] Edit Poll
-  - [X] JS
+- [x] Your Polls
+  - [x] JS
+  - [x] CSS
+- [x] Edit Poll
+  - [x] JS
   - [x] CSS
 - [ ] Landing page
   - [ ] CSS
@@ -44,10 +43,10 @@
 
 ## Design
 
-- [ ] Pagina profilo e sottopagine
+- [ ] Landing Page
 
 ## Daily Goals for WEB
 
-- [X] Fare pagina Your Profile
-- [ ] Gestire sondaggio chiuso
-- [ ] Implementare Private/Public Signature
+- [ ] Aggiungere proxy
+- [ ] Aggiungere labels di errore
+- [ ] Fare landing page

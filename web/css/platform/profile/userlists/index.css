@@ -25,6 +25,7 @@
     padding: 0.5rem 1rem;
 
     border-radius: 4px;
+    background-color: #fff;
     border: 1px solid #D8DAE5;
 
     font-size: 1.5rem;
@@ -52,4 +53,14 @@
     font-size: 1.5rem;
     color: var(--color-primary-900);
     background-color: var(--color-primary-100);
+}
+
+.action.danger {
+    color: var(--color-danger-900);
+    background-color: var(--color-danger-100);
+}
+
+.action.success {
+    color: var(--color-success-900);
+    background-color: var(--color-success-100);
 }
