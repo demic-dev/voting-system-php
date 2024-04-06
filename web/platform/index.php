@@ -30,6 +30,10 @@
                 <h3 class="heading" data-translation="LABELS.dashboard.active_polls"></h3>
             </div>
             <div class="polls" id="active_polls">
+                <div class="alert alert-light empty_state__container">
+                    <i class="bi bi-broadcast"></i>
+                    <h3 data-translation="LABELS.states.active_polls"></h3>
+                </div>
             </div>
         </div>
         <div class="dashboard__section">
@@ -37,6 +41,10 @@
                 <h3 class="heading" data-translation="LABELS.dashboard.past_polls"></h3>
             </div>
             <div class="polls" id="past_polls">
+                <div class="alert alert-light empty_state__container">
+                    <i class="bi bi-broadcast"></i>
+                    <h5 data-translation="LABELS.states.past_polls"></h5>
+                </div>
             </div>
         </div>
     </div>

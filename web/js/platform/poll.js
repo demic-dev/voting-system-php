@@ -6,38 +6,16 @@ const url = new URL(window.location.href);
 const id = url.searchParams.get("id");
 
 let hasVoted = false;
-let isClosed = false;
-
-/**
- * The main button has to be disabled if:
- * - Poll is not started
- * - Poll is ended
- * - User has already voted
- */
-function handleSubmitButton() {
-    if (hasVoted || isClosed) {
-        $("#submit_cta").addClass("d-none");
-        $("#voted-response").removeClass("d-none");
-        
-        if (hasVoted) {
-            $("#voted-response").addClass("alert-primary");
-            $("#voted-response").text(getTranslation("LABELS.vote.submitted"));
-        }
-    } else {
-        $("#submit_cta").removeClass("d-none");
-        $("#voted-response").addClass("d-none");
-
-    }
-}
 
 function startCountdown(startDate, endDate) {
     setInterval(function countdown() {
         const now = new Date();
         const container = $(".badge__container");
 
-        if (now >= endDate) {
-            isClosed = true;
+        const isExpired = now >= endDate;
+        const isNotOpen = now < startDate;
 
+        if (isExpired) {
             container.addClass("is-ended");
 
             const icon = $(container).children(".bi-clock-fill");
@@ -45,6 +23,7 @@ function startCountdown(startDate, endDate) {
             icon.addClass("bi-exclamation-circle-fill");
 
             $("#countdown").text(getTranslation("LABELS.vote.closed_ago", getRelativeTime(endDate)));
+            $("#submit_cta").addClass("d-none");
 
             clearInterval(this);
         } else {
@@ -67,13 +46,13 @@ function startCountdown(startDate, endDate) {
                 String(seconds).padStart(2, "0")
             );
 
-            if (now < startDate) {
+            if (isNotOpen) {
                 container.addClass("isnt-started");
+                $("#submit_cta").addClass("d-none");
                 $("#countdown").text(getTranslation("LABELS.vote.is_not_started", countdownString));
             } else {
-                if (isClosed) {
-                    isClosed = false;
-                    handleSubmitButton();
+                if (!hasVoted) {
+                    $("#submit_cta").removeClass("d-none");
                 }
 
                 container.removeClass("isnt-started");
@@ -86,6 +65,17 @@ function startCountdown(startDate, endDate) {
 };
 
 $(document).ready(function (e) {
+    /**
+     * A poll can be:
+     * - Closed (data.closed = true) [Show red badge and results]
+     * - Expired (now >= endDate) [Show red badge]
+     * - Not Open (now < startDate) [Show yellow badge]
+     * - Active (now >= startDate && now < endDate) [Show green badge]
+     * 
+     * While the user is in the page, the poll can change:
+     * - From Not open to Active
+     * - From Active to Expired
+     */
     executeAjaxCall({
         apiName: 'poll',
         method: 'GET',
@@ -100,12 +90,40 @@ $(document).ready(function (e) {
             $("#description").text(data.description);
             $("#public_key").text(data.public_key);
 
-            // rendering the countdown
-            const now = new Date();
+            const isClosed = data.closed;
+
+            hasVoted = data.has_voted;
+            if (hasVoted && !isClosed) {
+                $("#voted-response").addClass("alert-primary");
+                $("#voted-response").text(getTranslation("LABELS.vote.submitted"));
+
+                $("#submit_cta").addClass("d-none");
+                $("#voted-response").removeClass("d-none");
+            }
+
+            // rendering the countdown and handle the state
             const startDate = new Date(data.start_date);
             const endDate = new Date(data.due_date);
 
             startCountdown(startDate, endDate);
+
+            const totalVotesMarked = data.options.reduce(function (prev, current) {
+                return prev + current.count
+            }, 0);
+
+            const max = data.options.reduce(function (prev, current) {
+                return (prev > current.count) ? prev : current.count
+            }, -1);
+
+            if (isClosed) {
+                const affluence = Math.floor((totalVotesMarked * 100) / data.users);
+                $("#poll_closed__container").removeClass('d-none');
+                $("#poll_closed__container").append(`
+                    <h4 class="alert-heading">
+                        ${getTranslation("LABELS.vote.poll_closed", affluence, totalVotesMarked, data.users)}
+                    </h4>
+                `);
+            }
 
             // rendering the options
             let letterNumber = 65;
@@ -119,6 +137,21 @@ $(document).ready(function (e) {
                 const label = $(`<div class="option__label"></div>`);
                 label.text(option.text);
 
+                if (isClosed) {
+                    label.append('<hr />');
+                    letter.attr("disabled", true);
+
+                    const votesDetails = $('<div></div>');
+                    const percentage = Math.floor((option.count * 100) / totalVotesMarked) || 0;
+                    votesDetails.html(getTranslation("LABELS.vote.option_detail", option.count, totalVotesMarked, percentage));
+                    label.append(votesDetails);
+
+                    if (option.count === max) {
+                        label.addClass('winner');
+                        letter.addClass('winner');
+                    }
+                }
+
                 const container = $(`<div class="option__container"></div>`);
                 container.append(letter);
                 container.append(label);
@@ -126,13 +159,6 @@ $(document).ready(function (e) {
                 $("#options").append(container);
                 letterNumber++;
             }
-
-            hasVoted = data.has_voted;
-            isClosed = now < startDate || now >= endDate;
-            handleSubmitButton();
-        },
-        errorCallback: function (err) {
-            console.log(err.responseText)
         }
     });
 });
@@ -172,10 +198,11 @@ $("form").on("submit", function (e) {
             data: { poll: id, option: encryptedVote },
             successCallback: function (res) {
                 hasVoted = true;
-                handleSubmitButton();
-            },
-            errorCallback: function (err) {
-                console.log(err);
+                $("#voted-response").addClass("alert-primary");
+                $("#voted-response").text(getTranslation("LABELS.vote.submitted"));
+
+                $("#submit_cta").addClass("d-none");
+                $("#voted-response").removeClass("d-none");
             }
         });
     }

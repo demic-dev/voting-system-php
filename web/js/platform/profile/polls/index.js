@@ -8,6 +8,9 @@ $(document).ready(function (e) {
         successCallback: function (res) {
             const data = JSON.parse(res.data);
 
+            if (data.length > 0) {
+                $("#polls__container").empty();
+            }
             for (const index in data) {
                 const poll = data[index];
 
@@ -29,6 +32,11 @@ $(document).ready(function (e) {
                     </button>
                 `);
 
+                if (poll.closed) {
+                    editLink.addClass('d-none');
+                    closeButton.addClass('d-none');
+                }
+
                 const ctasContainer = $(`<div class="ctas__container"></div>`);
 
                 $(ctasContainer).append(editLink);
@@ -44,10 +52,6 @@ $(document).ready(function (e) {
 
                 $("#polls__container").append(container);
             }
-        },
-        errorCallback: function (err) {
-            // Silent error, shown only in console.
-            console.log(err);
         }
     });
 })
@@ -64,9 +68,6 @@ $("#polls__container").delegate("button", "click", function (e) {
                 data: { id },
                 successCallback: function (res) {
                     window.location.reload();
-                },
-                errorCallback: function (err) {
-                    console.log(err);
                 }
             });
             break;
@@ -79,9 +80,6 @@ $("#polls__container").delegate("button", "click", function (e) {
                 data: { id, privateKey },
                 successCallback: function (res) {
                     window.location.href = `/web/platform/poll.php?id=${id}`;
-                },
-                errorCallback: function (err) {
-                    console.log(err);
                 }
             });
             break;

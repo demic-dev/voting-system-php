@@ -23,7 +23,7 @@
 <body>
     <?php include_once "../../../header.php"; ?>
     <form class="container form__container">
-        <h1 class="form__heading" data-translation="LABELS.new_userlist.title"></h1>
+        <h1 class="form__heading" data-translation="LABELS.new_userlist.heading"></h1>
         <div class="form__inputs">
             <div class="row">
                 <div>
@@ -47,9 +47,6 @@
         <div class="cta__container">
             <button type="submit" class="btn btn-primary" data-translation="LABELS.sign_in.submit"></button>
         </div>
-
-        <div id="response" class="alert d-none" role="alert"></div>
-
     </form>
 </body>
 

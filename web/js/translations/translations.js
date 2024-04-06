@@ -64,12 +64,12 @@ export default {
             "public_key": {
                 "it": "Chiave pubblica:",
                 "en": "Public key:",
-                "fr": ""
+                "fr": "Clé publique :"
             },
             "is_not_started": {
                 "it": "Il sondaggio sarà attivo tra ~",
                 "en": "The poll will be active in ~",
-                "fr": ""
+                "fr": "Le sondage sera actif dans ~"
             },
             "active_until": {
                 "it": "~ giorno(i), ~:~:~",
@@ -77,26 +77,43 @@ export default {
                 "fr": "~ jour(s) ~:~:~"
             },
             "closed_ago": {
-                "it": "Concluso ~.",
-                "en": "Closed ~.",
-                "fr": "Fermé ~."
+                "it": "Scaduto ~.",
+                "en": "Expired ~.",
+                "fr": "Expiré ~."
             },
             "submitted": {
-                "it": "Grazie per aver votato! Attendi che il sondaggio sia concluso per vedere i risultati.",
-                "en": "Thank you for voting! Wait until the end to see the results.",
-                "fr": ""
+                "it": "Grazie per aver votato! Attendi che l'organizzatore chiuda il sondaggio.",
+                "en": "Thank you for voting! Wait for the organizer to close the poll.",
+                "fr": "Merci d'avoir voté ! Attendez que l'organisateur ferme le sondage."
             },
             "poll_closed": {
-                "it": "Il sondaggio si è concluso! Ecco alcuni dettagli",
-                "en": "The poll has ended! Here are some details",
-                "fr": "Le sondage est terminé ! Voici quelques détails"
+                "it": "Il sondaggio si è concluso! Affluenza: <strong>~%</strong>. <strong>~</strong> voto(i) su <strong>~</strong>.",
+                "en": "The poll has ended! Turnout: <strong>~%</strong>. <strong>~</strong> vote(s) out of <strong>~</strong>.",
+                "fr": "Le sondage est terminé ! Participation : <strong>~%</strong>. <strong>~</strong> vote(s) sur <strong>~</strong>."
             },
+            "option_detail": {
+                "it": "Per questa opzione, ci sono stati <strong>~</strong> voto(i) su <strong>~</strong>. Circa il <strong>~%</strong>.",
+                "en": "For this option, there have been <strong>~</strong> vote(s) out of <strong>~</strong>. Approximately <strong>~%</strong>.",
+                "fr": "Pour cette option, il y a eu <strong>~</strong> vote(s) sur <strong>~</strong>. Environ <strong>~%</strong>."
+            }
         },
+        "your_userlists": {
+            "title": {
+                "it": "Le tue liste utenti",
+                "en": "Your user lists",
+                "fr": "Vos listes d'utilisateurs"
+            }
+        },        
         "new_userlist": {
             "title": {
                 "it": "Crea nuova lista utenti",
                 "en": "Create new user list",
                 "fr": "Créer une nouvelle liste d'utilisateurs"
+            },
+            "heading": {
+                "it": "Dettagli della lista utenti",
+                "en": "User list details",
+                "fr": "Détails de la liste d'utilisateurs"
             },
             "selected_users": {
                 "it": "Utenti aggiunti",
@@ -107,6 +124,13 @@ export default {
                 "it": "Tutti gli utenti",
                 "en": "All the users",
                 "fr": "Tous les utilisateurs"
+            }
+        },
+        "your_polls": {
+            "title": {
+                "it": "I tuoi sondaggi",
+                "en": "Your polls",
+                "fr": "Vos sondages"
             }
         },
         "new_poll": {
@@ -237,8 +261,8 @@ export default {
                 "error": {
                     "it": "Il nome non può essere vuoto!",
                     "en": "The name must not be empty!",
-                    "fr": ""
-                }
+                    "fr": "Le nom ne peut pas être vide !"
+                }                
             },
             "surname": {
                 "label": {
@@ -249,8 +273,8 @@ export default {
                 "error": {
                     "it": "Il cognome non può essere vuoto!",
                     "en": "The surname must not be empty!",
-                    "fr": ""
-                }
+                    "fr": "Le nom de famille ne peut pas être vide !"
+                }                
             },
             "email": {
                 "label": {
@@ -334,6 +358,29 @@ export default {
                 }
             }
         },
+        "states": {
+            "polls": {
+                "it": `Non hai alcun sondaggio. <a href="./new.php">Inizia ora</a>.`,
+                "en": `You don't have any polls. <a href="./new.php">Start now</a>.`,
+                "fr": `Vous n'avez aucun sondage. <a href="./new.php">Commencez maintenant</a>.`
+            },
+            "userlists": {
+                "it": `Non hai alcuna lista utenti. <a href="./new.php">Creane una</a>.`,
+                "en": `You don't have any user lists. <a href="./new.php">Create one</a>.`,
+                "fr": `Vous n'avez aucune liste d'utilisateurs. <a href="./new.php">Créez-en une</a>.`
+            },
+            "active_polls": {
+                "it": "Non ci sono sondaggi a cui partecipare... Torna in un secondo momento!",
+                "en": "There are no polls to participate in... Check back later!",
+                "fr": "Il n'y a aucun sondage auquel participer... Revenez plus tard !"
+            },
+            "past_polls": {
+                "it": "Non hai partecipato a nessun sondaggio per ora!",
+                "en": "You haven't participated in any polls yet!",
+                "fr": "Vous n'avez pas encore participé à de sondages !"
+            }
+        }
+
     },
     "API_RESPONSES": {
         "sign-up": {

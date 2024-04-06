@@ -1,20 +1,5 @@
 <?php
 
-function get_mapping_callback()
-{
-    return function ($_, $v, $__) {
-        return array(
-            ...$v,
-            'owner' => get_item_from_file('id', $v['owner'], USERS),
-            'users' => get_items_from_file_bulk(USERS, function ($_, $v, $__) {
-                return in_array($v['id'], $v['users']);
-            }),
-            // add proxies
-            'proxies' => array(),
-        );
-    };
-}
-
 //region GET
 
 /**
@@ -25,7 +10,19 @@ function get_mapping_callback()
  */
 function get_userlist(mixed $data): mixed
 {
-    return get_item_from_file('id', $data['id'], USERLISTS, get_mapping_callback());
+    $mapping_callback = function ($userlist) {
+        return array(
+            ...$userlist,
+            'owner' => get_item_from_file('id', $userlist['owner'], USERS),
+            'users' => get_items_from_file_bulk(USERS, function ($_, $user, $__) use ($userlist) {
+                return in_array($user['id'], $userlist['users']);
+            }),
+            // add proxies
+            'proxies' => array(),
+        );
+    };
+
+    return get_item_from_file('id', $data['id'], USERLISTS, $mapping_callback);
 }
 
 /**
@@ -36,10 +33,22 @@ function get_userlist(mixed $data): mixed
 function userlists_by_self()
 {
     $filter_callback = function ($k, $v, $_) {
-        return $v['owner'] !== $_SESSION['data']['id'];
+        return $v['owner'] === $_SESSION['data']['id'];
     };
 
-    return get_items_from_file_bulk(USERLISTS, $filter_callback, get_mapping_callback());
+    $mapping_callback = function ($_, $userlist) {
+        return array(
+            ...$userlist,
+            'owner' => get_item_from_file('id', $userlist['owner'], USERS),
+            'users' => get_items_from_file_bulk(USERS, function ($_, $user, $__) use ($userlist) {
+                return in_array($user['id'], $userlist['users']);
+            }),
+            // add proxies
+            'proxies' => array(),
+        );
+    };
+
+    return get_items_from_file_bulk(USERLISTS, $filter_callback, $mapping_callback);
 }
 
 //endregion
@@ -55,12 +64,13 @@ function userlists_by_self()
  *                    - 'proxies': An array of proxy IDs associated with the user list.
  * @return mixed Returns an associative array representing the newly created user list if successful, otherwise NULL.
  */
-function create_userlist(string $owner, mixed $data): mixed
+function create_userlist(mixed $data): mixed
 {
     try {
         $id = uniqid();
         $name = $data['name'];
         $users = $data['users'];
+        $owner = $_SESSION['data']['id'];
         $proxies = $data['proxies'];
 
         array_push($users, $owner);

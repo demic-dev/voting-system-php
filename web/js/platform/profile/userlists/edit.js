@@ -25,35 +25,38 @@ $(document).ready(function (e) {
                         const user = usersData[index];
 
                         const elt = $(`<div class="user_item__container" id="${user.id}"></div>`).text(`${user.name} ${user.surname}`);
-                        $(elt).append("<button type=\"button\" class=\"user__icon add-user\"><i class=\"bi bi-plus\"></i></button>");
+                        const icon = $(`<i class=\"bi bi-plus\"></i>`);
+                        const button = $(`<button type="button" class="user__icon add-user"></button>`);
+                        button.append(icon);
+                        $(elt).append(button);
 
-                        if (current.users.includes(user.id)) {
-                            // bi-trash-fill
+                        if (!!current.users.find(u => u.id === user.id)) {
+                            icon.toggleClass('bi-plus bi-trash-fill');
                             $("#selected-users").append(elt);
                         } else {
                             $("#all-users").append(elt);
                         }
 
                     }
-                },
-                errorCallback: function (err) { }
+                }
             })
-        },
-        errorCallback: function (err) {
-            console.log(err);
         }
     });
 });
 
+// remove from selected
 $("#selected-users").delegate("button", "click", function (e) {
     const selectedUser = $(e.currentTarget).parent();
 
+    $(e.currentTarget).children('i').toggleClass('bi-trash-fill bi-plus');
     $("#all-users").append(selectedUser);
 });
 
+// add to selected
 $("#all-users").delegate("button", "click", function (e) {
     const selectedUser = $(e.currentTarget).parent();
 
+    $(e.currentTarget).children('i').toggleClass('bi-plus bi-trash-fill');
     $("#selected-users").append(selectedUser);
 });
 
@@ -91,13 +94,6 @@ $("form").on('submit', function (e) {
         data,
         successCallback: function (res) {
             window.location.href = "/web/platform/profile/userlists/";
-        },
-        errorCallback: function (err) {
-            console.log(err)
-            $("#response").removeClass("d-none");
-            $("#response").addClass("alert-danger");
-
-            $("#response").text(getTranslation(err.responseText?.message));
         }
     });
 });

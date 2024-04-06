@@ -62,15 +62,8 @@ $(document).ready(function (e) {
 
 
 
-                },
-                errorCallback: function (err) {
-                    console.log(err.responseText);
                 }
             });
-        },
-        errorCallback: function (err) {
-            // Silent error, shown only in console.
-            console.log(err);
         }
     });
 });
@@ -154,12 +147,6 @@ $("form").on('submit', function (e) {
         data: { ...data, id },
         successCallback: function (res) {
             window.location.href = "/web/platform/profile/polls/";
-        },
-        errorCallback: function (err) {
-            $("#response").removeClass("d-none");
-            $("#response").addClass("alert-danger");
-
-            $("#response").text(getTranslation(err.responseText?.message));
         }
     });
 });

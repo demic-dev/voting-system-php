@@ -12,11 +12,11 @@ function update_item_from_file(string $id, mixed $data, string $filepath): mixed
 {
     $file = safely_open_json($filepath);
 
-    $res = -1;
-    if ($updated_file = update_in_file($id, $data, $file, $res)) {
+    $index = -1;
+    if ($updated_file = update_in_file($id, $data, $file, $index)) {
         safely_overwrite_json($filepath, $updated_file);
 
-        return $res;
+        return $updated_file[$index];
     }
 
     return NULL;

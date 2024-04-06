@@ -65,9 +65,6 @@
         <div class="submit__container">
             <button type="submit" class="btn btn-primary" data-translation="LABELS.sign_in.submit"></button>
         </div>
-
-        <div id="response" class="alert d-none" role="alert"></div>
-
     </form>
 </body>
 

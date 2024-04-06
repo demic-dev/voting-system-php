@@ -11,6 +11,7 @@
         if (count($_SESSION) > 0) {
             echo $_SESSION['data']['name'] . " " . $_SESSION['data']['surname'];
         } else {
+            session_destroy();
             header('Location: /web/sign-in.html');
         }
         ?>

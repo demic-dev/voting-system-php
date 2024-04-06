@@ -22,6 +22,18 @@ function setDefaultLanguage() {
     }
 }
 
+function addResponseToast() {
+    const toast = $(`
+        <div id="toast" class="toast__position toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true" >
+            <div class="d-flex">
+                <div class="toast-body" id="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div >
+    `);
+    $(document.body).append(toast);
+}
+
 $(document).ready(function () {
     setDefaultLanguage();
     setAllTranslationsLabel();
@@ -34,4 +46,6 @@ $(document).ready(function () {
         localStorage.setItem("lang", selectedLanguage);
         location.reload();
     });
+
+    addResponseToast();
 })

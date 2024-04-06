@@ -33,6 +33,10 @@ function add_vote(mixed $data): mixed
 function close_voting(mixed $data): mixed
 {
     if ($poll = get_item_from_file('id', $data['id'], POLLS)) {
+        if ($poll['closed']) {
+            return NULL;
+        }
+
         $private_key = $data['privateKey'];
         $decrypted_answer = "";
 
@@ -46,6 +50,12 @@ function close_voting(mixed $data): mixed
                 return NULL;
             }
         }
+
+        if (strtotime(date($poll['due_date'])) >= time()) {
+            $poll['due_date'] = (new DateTime())->format('c');
+        }
+
+        $poll['closed'] = true;
 
         return update_item_from_file($data['id'], $poll, POLLS);
     };

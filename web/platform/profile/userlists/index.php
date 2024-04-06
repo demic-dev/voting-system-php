@@ -23,8 +23,12 @@
 <body>
     <?php include_once "../../../header.php"; ?>
     <main class="container">
-        <h1 class="heading" data-translation="LABELS.your_userlists.heading"></h1>
+        <h1 class="heading" data-translation="LABELS.your_userlists.title"></h1>
         <div class="contents__container" id="userlists__container">
+            <div class="alert alert-light empty_state__container">
+                <i class="bi bi-broadcast"></i>
+                <h4 data-translation="LABELS.states.userlists"></h4>
+            </div>
         </div>
     </main>
 </body>

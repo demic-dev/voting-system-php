@@ -75,9 +75,8 @@ function get_code_and_message(int $code, string|null $message = '')
 function compose_api_response(bool $is_protected, mixed $params, mixed $callback, array $params_safety_check = NULL, mixed $messages = array()): mixed
 {
     try {
-        session_start();
         /* Start the session if the API is authenticated. */
-        if ($is_protected && !isset($_SESSION['data'])) {
+        if ($is_protected && session_start() && !isset($_SESSION['data'])) {
             return get_code_and_message(401);
         }
 

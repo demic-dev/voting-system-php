@@ -22,8 +22,15 @@ function __create_options(array $options): mixed
 function get_poll(mixed $data): mixed
 {
     $mapping_callback = function ($poll) {
+        $userlist = get_userlist(array('id' => $poll['userlist']));
+
         $poll['owner'] = get_user(array('id' => $poll['owner']));
         $poll['has_voted'] = in_array($_SESSION['data']['id'], $poll['voted_by']);
+
+        $poll['users'] = count($userlist['users']);
+        $poll['voted_by'] = count($poll['voted_by']);
+
+        return $poll;
     };
 
     return get_item_from_file('id', $data['id'], POLLS, $mapping_callback);
@@ -36,13 +43,18 @@ function get_poll(mixed $data): mixed
  */
 function get_polls_by_self(): mixed
 {
-    $filter_callback = function ($k, $v, $polls) {
+    $filter_callback = function ($_, $v) {
         return $v['owner'] === $_SESSION['data']['id'];
     };
-    $mapping_callback = function ($poll) {
+    $mapping_callback = function ($_, $poll) {
+        $userlist = get_userlist(array('id' => $poll['userlist']));
+
+        $poll['userlist'] = $userlist;
         $poll['owner'] = get_user(array('id' => $poll['owner']));
-        // $poll['userlist'] = get_userlist(array('id' => $poll['owner']));
-        // $poll['has_voted'] = in_array($_SESSION['data']['id'], $poll['voted_by']);
+        $poll['has_voted'] = in_array($_SESSION['data']['id'], $poll['voted_by']);
+
+        $poll['users'] = count($userlist['users']);
+        $poll['voted_by'] = count($poll['voted_by']);
 
         return $poll;
     };
@@ -60,21 +72,30 @@ function get_polls_per_user(): mixed
 {
     $user_id = $_SESSION['data']['id'];
 
-    $filter_callback_active = function ($k, $v, $polls) use ($user_id) {
+    $filter_callback_active = function ($_, $v) use ($user_id) {
         // I search for the polls where the user is in the list and that are active.
-        return ($userlist = get_userlist(array('id' => $v['owner'])))
-            && in_array($user_id, $userlist['users'])
+        return ($userlist = get_userlist(array('id' => $v['userlist'])))
+            && in_array($user_id, array_column($userlist['users'], 'id'))
             && strtotime(date($v['due_date'])) >= time();
     };
-    $filter_callback_ended = function ($k, $v, $polls) use ($user_id) {
+    $filter_callback_ended = function ($_, $v) use ($user_id) {
         // I search for the polls where the user is in the list and that are inactive.
-        return ($userlist = get_userlist(array('id' => $v['owner'])))
-            && in_array($user_id, $userlist['users'])
+        return ($userlist = get_userlist(array('id' => $v['userlist'])))
+            && in_array($user_id, array_column($userlist['users'], 'id'))
             && strtotime(date($v['due_date'])) < time();
     };
-    $mapping_callback = function ($poll) {
+
+    $mapping_callback = function ($_, $poll) {
+        $userlist = get_userlist(array('id' => $poll['userlist']));
+
         $poll['owner'] = get_user(array('id' => $poll['owner']));
         $poll['has_voted'] = in_array($_SESSION['data']['id'], $poll['voted_by']);
+
+
+        $poll['users'] = count($userlist['users']);
+        $poll['voted_by'] = count($poll['voted_by']);
+
+        return $poll;
     };
 
     $active_polls = get_items_from_file_bulk(POLLS, $filter_callback_active, $mapping_callback);
@@ -131,6 +152,7 @@ function create_poll(mixed $data): mixed
         'userlist' => $userlist,
         'voted_by' => array(),
         'votes' => [],
+        'closed' => false,
         ...set_data_log(),
     );
     array_push($file, $res);

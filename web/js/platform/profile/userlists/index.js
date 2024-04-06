@@ -8,6 +8,9 @@ $(document).ready(function (e) {
         successCallback: function (res) {
             const data = JSON.parse(res.data);
 
+            if (data.length > 0) {
+                $("#userlists__container").empty();
+            }
             for (const index in data) {
                 const userlist = data[index];
 
@@ -18,7 +21,7 @@ $(document).ready(function (e) {
                 `);
 
                 const deleteButton = $(`
-                    <button type="button" class="action" id="${userlist.id}">
+                    <button type="button" class="action danger" id="${userlist.id}">
                         <i class="bi bi-trash-fill"></i>
                     </button>
                 `);
@@ -37,10 +40,6 @@ $(document).ready(function (e) {
 
                 $("#userlists__container").append(userlistContainer);
             }
-        },
-        errorCallback: function (err) {
-            // Silent error, shown only in console.
-            console.log(err);
         }
     });
 })
@@ -54,9 +53,6 @@ $("#userlists__container").delegate("button", "click", function (e) {
         data: { id },
         successCallback: function (res) {
             window.location.reload();
-        },
-        errorCallback: function (err) {
-            console.log(err);
         }
     });
 });

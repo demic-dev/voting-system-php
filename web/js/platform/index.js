@@ -10,6 +10,9 @@ $(document).ready(function (e) {
             const dateFormat = new Intl.DateTimeFormat(getCurrentLanguage(), { dateStyle: 'medium' });
             const timeFormat = new Intl.DateTimeFormat(getCurrentLanguage(), { timeStyle: "short", hour12: false, });
 
+            if (data.active_polls.length > 0) {
+                $("#active_polls").empty();
+            }
             for (const index in data.active_polls) {
                 const poll = data.active_polls[index];
                 const container = $(`<div class="poll"></div>`);
@@ -47,7 +50,7 @@ $(document).ready(function (e) {
                     </div>
                 `).append(owner);
                 let voted_by = $(`<div class="poll__info__detail__label"></div>`);
-                voted_by.text("No one xd");
+                voted_by.text(`${poll.voted_by}/${poll.users}`);
                 voted_by = $(`
                     <div class="poll__info__detail__container">
                         <i class="bi bi-shuffle"></i>
@@ -65,6 +68,9 @@ $(document).ready(function (e) {
                 $("#active_polls").append(container);
             }
 
+            if (data.ended_polls.length > 0) {
+                $("#past_polls").empty();
+            }
             for (const index in data.ended_polls) {
                 const poll = data.ended_polls[index];
                 const container = $(`<div class="poll is-past"></div>`);
@@ -102,7 +108,7 @@ $(document).ready(function (e) {
                     </div>
                 `).append(owner);
                 let voted_by = $(`<div class="poll__info__detail__label"></div>`);
-                voted_by.text("No one xd");
+                voted_by.text(`${poll.voted_by}/${poll.users}`);
                 voted_by = $(`
                     <div class="poll__info__detail__container">
                         <i class="bi bi-shuffle"></i>
@@ -143,9 +149,6 @@ $(document).ready(function (e) {
                 //     </div>
                 // </div>
             }
-        },
-        errorCallback: function (err) {
-            console.log(err.responseText)
         }
     });
 });
