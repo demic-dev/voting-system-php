@@ -1,5 +1,33 @@
 <?php
 
+/**
+ * @source ./controller/get.php
+ * Since the bulk get and the normal get requires two different set of params,
+ * this function wraps them in order to not repeat code and increase consistency.
+ * 
+ * @param mixed $poll The poll to parse
+ * @return mixed The poll parsed
+ */
+function __parse_poll(mixed $poll): mixed
+{
+    $userlist = get_userlist(array('id' => $poll['userlist']));
+    $proxy_0 = $userlist['proxies'][$_SESSION['data']['id']][0];
+    $proxy_1 = $userlist['proxies'][$_SESSION['data']['id']][1];
+
+    $poll['userlist'] = $userlist;
+    $poll['owner'] = get_user(array('id' => $poll['owner']));
+
+    $poll['has_voted'] = in_array($_SESSION['data']['id'], $poll['voted_by']);
+    $poll['has_proxy_0'] = in_array($proxy_0, $poll['voted_by']);
+    $poll['has_proxy_1'] = in_array($proxy_1, $poll['voted_by']);
+
+    $poll['users'] = count($userlist['users']);
+    $poll['voted_by'] = count($poll['voted_by']);
+
+
+    return $poll;
+}
+
 function __create_options(array $options): mixed
 {
     return array_map(function ($k, $v) {
@@ -22,18 +50,16 @@ function __create_options(array $options): mixed
 function get_poll(mixed $data): mixed
 {
     $mapping_callback = function ($poll) {
-        $userlist = get_userlist(array('id' => $poll['userlist']));
-
-        $poll['owner'] = get_user(array('id' => $poll['owner']));
-        $poll['has_voted'] = in_array($_SESSION['data']['id'], $poll['voted_by']);
-
-        $poll['users'] = count($userlist['users']);
-        $poll['voted_by'] = count($poll['voted_by']);
-
-        return $poll;
+        return __parse_poll($poll);
     };
 
-    return get_item_from_file('id', $data['id'], POLLS, $mapping_callback);
+    if (($poll = get_item_from_file('id', $data['id'], POLLS, $mapping_callback)) &&
+        in_array($_SESSION['data']['id'], array_column($poll['userlist']['users'], 'id'))
+    ) {
+        return $poll;
+    }
+
+    return NULL;
 }
 
 /**
@@ -47,18 +73,8 @@ function get_polls_by_self(): mixed
         return $v['owner'] === $_SESSION['data']['id'];
     };
     $mapping_callback = function ($_, $poll) {
-        $userlist = get_userlist(array('id' => $poll['userlist']));
-
-        $poll['userlist'] = $userlist;
-        $poll['owner'] = get_user(array('id' => $poll['owner']));
-        $poll['has_voted'] = in_array($_SESSION['data']['id'], $poll['voted_by']);
-
-        $poll['users'] = count($userlist['users']);
-        $poll['voted_by'] = count($poll['voted_by']);
-
-        return $poll;
+        return __parse_poll($poll);
     };
-    /* TO-DO: USERS DETAILS (authorised_users) */
 
     return get_items_from_file_bulk(POLLS, $filter_callback, $mapping_callback);
 }
@@ -86,16 +102,7 @@ function get_polls_per_user(): mixed
     };
 
     $mapping_callback = function ($_, $poll) {
-        $userlist = get_userlist(array('id' => $poll['userlist']));
-
-        $poll['owner'] = get_user(array('id' => $poll['owner']));
-        $poll['has_voted'] = in_array($_SESSION['data']['id'], $poll['voted_by']);
-
-
-        $poll['users'] = count($userlist['users']);
-        $poll['voted_by'] = count($poll['voted_by']);
-
-        return $poll;
+        return __parse_poll($poll);
     };
 
     $active_polls = get_items_from_file_bulk(POLLS, $filter_callback_active, $mapping_callback);
@@ -150,7 +157,8 @@ function create_poll(mixed $data): mixed
         'start_date' => $start_date,
         'due_date' => $due_date,
         'userlist' => $userlist,
-        'voted_by' => array(),
+        'voted_by' => [],
+        'proxies' => [],
         'votes' => [],
         'closed' => false,
         ...set_data_log(),

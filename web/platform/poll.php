@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <div class="alert alert-success report__container d-none" id="poll_closed__container" role="alert">
+        <div class="alert report__container d-none" id="poll_stats__container" role="alert">
         </div>
 
         <div class="alert alert-light keycode__container" role="alert">
@@ -49,7 +49,9 @@
         <div class="options__container" id="options"></div>
         <div class="alert d-none" id="voted-response" role="alert"></div>
         <div class="ctas__container">
-            <button type="submit" data-translation="LABELS.vote.main_cta" class="cta no-proxy" id="submit_cta"></button>
+            <button type="submit" class="cta proxy d-none" id="proxy_1_cta"></button>
+            <button type="submit" data-translation="LABELS.vote.main_cta" class="cta" id="submit_cta"></button>
+            <button type="submit" class="cta proxy d-none" id="proxy_0_cta"></button>
         </div>
     </form>
 </body>

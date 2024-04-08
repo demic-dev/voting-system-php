@@ -22,10 +22,10 @@ export function getTranslation(labelString, ...variables) {
                 bareTranslation = bareTranslation.replace("~", variables[index]);
             }
 
-            return bareTranslation || labelString;
+            return bareTranslation;
         }
 
-        return result?.[language] || labelString;
+        return result?.[language];
     } catch (e) {
         return labelString;
     }

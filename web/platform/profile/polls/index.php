@@ -23,7 +23,7 @@
 <body>
     <?php include_once "../../../header.php"; ?>
     <main class="container">
-        <h1 class="heading" data-translation="LABELS.your_polls.title"></h1>
+        <h1 class="heading" data-translation="LABELS.your_polls.heading"></h1>
         <div class="contents__container" id="polls__container">
             <div class="alert alert-light empty_state__container">
                 <i class="bi bi-broadcast"></i>

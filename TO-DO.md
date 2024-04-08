@@ -2,9 +2,6 @@
 
 ## Backend
 
-- [ ] API PROXY
-- [ ] Poll Update fix options
-
 ## Frontend
 
 - Sign In
@@ -19,10 +16,10 @@
 - [x] New Poll
   - [x] JS
   - [x] CSS
-- [ ] Poll
+- [X] Poll
   - [x] JS
   - [x] CSS
-  - [ ] Proxy
+  - [X] Proxy
   - [x] Crypted
   - [X] Closed
 - [x] Your Profile
@@ -48,5 +45,6 @@
 ## Daily Goals for WEB
 
 - [ ] Aggiungere proxy
-- [ ] Aggiungere labels di errore
+- [ ] Fix deletion
+- [X] Aggiungere labels di errore
 - [ ] Fare landing page

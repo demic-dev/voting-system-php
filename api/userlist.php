@@ -17,8 +17,6 @@ function get_userlist(mixed $data): mixed
             'users' => get_items_from_file_bulk(USERS, function ($_, $user, $__) use ($userlist) {
                 return in_array($user['id'], $userlist['users']);
             }),
-            // add proxies
-            'proxies' => array(),
         );
     };
 
@@ -43,8 +41,6 @@ function userlists_by_self()
             'users' => get_items_from_file_bulk(USERS, function ($_, $user, $__) use ($userlist) {
                 return in_array($user['id'], $userlist['users']);
             }),
-            // add proxies
-            'proxies' => array(),
         );
     };
 
