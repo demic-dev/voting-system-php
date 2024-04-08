@@ -72,9 +72,16 @@ function get_code_and_message(int $code, string|null $message = '')
  * @param string $message OPTIONAL - A custom message to return
  * @return mixed The response with the format { code: number, message: string, data: mixed }
  */
-function compose_api_response(bool $is_protected, mixed $params, mixed $callback, array $params_safety_check = NULL, mixed $messages = array()): mixed
+function compose_api_response(bool $is_protected, mixed $params, mixed $callback, array $params_safety_check = NULL, string $api_name = ''): mixed
 {
     try {
+        $messages = array(
+            '200' => "API_RESPONSES." . $api_name . ".200",
+            '400' => "API_RESPONSES." . $api_name . ".400",
+            '401' => "API_RESPONSES." . $api_name . ".401",
+            '404' => "API_RESPONSES." . $api_name . ".401",
+        );
+
         /* Start the session if the API is authenticated. */
         if ($is_protected && session_start() && !isset($_SESSION['data'])) {
             return get_code_and_message(401);

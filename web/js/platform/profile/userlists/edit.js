@@ -1,8 +1,15 @@
-import { executeAjaxCall } from '../../../utils.js';
-import { getTranslation } from '../../../translations/index.js';
+import { executeAjaxCall, renderUsersInHTML } from '../../../utils.js';
+
+const allUsersID = "#all-users";
+const selectedUsersID = "#selected-users";
 
 const url = new URL(window.location.href);
 const id = url.searchParams.get("id");
+
+// map idUser => user object
+const users = {};
+// map idUser => proxy array
+const selectedUsers = {};
 
 $(document).ready(function (e) {
     executeAjaxCall({
@@ -20,44 +27,65 @@ $(document).ready(function (e) {
 
                     $("#name").val(current.name);
 
-                    // Implemented this workaround insead of $("#all-users").html(resulttostring); to prevent XSS
-                    for (const index in usersData) {
-                        const user = usersData[index];
+                    Object
+                        .values(usersData)
+                        .forEach(user => {
+                            users[user.id] = user;
+                        });
 
-                        const elt = $(`<div class="user_item__container" id="${user.id}"></div>`).text(`${user.name} ${user.surname}`);
-                        const icon = $(`<i class=\"bi bi-plus\"></i>`);
-                        const button = $(`<button type="button" class="user__icon add-user"></button>`);
-                        button.append(icon);
-                        $(elt).append(button);
+                    Object
+                        .keys(current.proxies)
+                        .forEach(user => {
+                            selectedUsers[user] = current.proxies[user];
+                        });
 
-                        if (!!current.users.find(u => u.id === user.id)) {
-                            icon.toggleClass('bi-plus bi-trash-fill');
-                            $("#selected-users").append(elt);
-                        } else {
-                            $("#all-users").append(elt);
-                        }
-
-                    }
+                    renderUsersInHTML(users, selectedUsers, allUsersID, false);
+                    renderUsersInHTML(users, selectedUsers, selectedUsersID, true);
                 }
             })
         }
     });
 });
 
-// remove from selected
-$("#selected-users").delegate("button", "click", function (e) {
-    const selectedUser = $(e.currentTarget).parent();
+// select proxies
+$(selectedUsersID).delegate("select", "change", function (e) {
+    const id = $(e.currentTarget).parent().attr("id");
+    const index = $(e.currentTarget).data("index");
+    const selectedProxy = e.target.value;
 
-    $(e.currentTarget).children('i').toggleClass('bi-trash-fill bi-plus');
-    $("#all-users").append(selectedUser);
+    if (selectedProxy == -1) {
+        selectedUsers[id][index] = "";
+    } else {
+        selectedUsers[selectedProxy] = new Array(2);
+        selectedUsers[id][index] = selectedProxy;
+    }
+
+    renderUsersInHTML(users, selectedUsers, selectedUsersID, true);
 });
 
-// add to selected
-$("#all-users").delegate("button", "click", function (e) {
-    const selectedUser = $(e.currentTarget).parent();
+/* Everytime I remove a user from the list, I rerender everything because in this way my list on the right is updated and in order */
+$(selectedUsersID).delegate("button", "click", function (e) {
+    const container = $($(e.currentTarget).parent()).parent();
+    const id = container.attr("id");
 
-    $(e.currentTarget).children('i').toggleClass('bi-plus bi-trash-fill');
-    $("#selected-users").append(selectedUser);
+    delete selectedUsers[id];
+    Object.keys(selectedUsers).forEach(userID => {
+        selectedUsers[userID] = selectedUsers[userID].filter(p => !p.includes(id));
+    });
+
+    renderUsersInHTML(users, selectedUsers, allUsersID);
+    renderUsersInHTML(users, selectedUsers, selectedUsersID, true);
+});
+
+/* Every time I select a new user to add to the list, I rerender everything because in this way my previous selects on the left's list are updated with the new user added. */
+$(allUsersID).delegate("button", "click", function (e) {
+    const container = $($(e.currentTarget).parent()).parent();
+    const id = container.attr("id");
+
+    selectedUsers[id] = new Array(2);
+
+    renderUsersInHTML(users, selectedUsers, allUsersID);
+    renderUsersInHTML(users, selectedUsers, selectedUsersID, true);
 });
 
 $("form :input").on("input", function (e) {
@@ -79,13 +107,13 @@ $("form").on('submit', function (e) {
     const data = $("form").serializeArray().reduce((prev, cur) => ({ ...prev, [cur.name]: cur.value }), {});
 
     const users = [];
-    const selectedUsers = $("#selected-users").children();
-    for (let i = 0; i < selectedUsers.length; i++) {
-        users.push($(selectedUsers[i]).attr("id"));
+    const usersToAdd = $("#selected-users").children();
+    for (let i = 0; i < usersToAdd.length; i++) {
+        users.push($(usersToAdd[i]).attr("id"));
     }
 
     data.users = users;
-    data.proxies = [];
+    data.proxies = selectedUsers;
     data.id = id;
 
     executeAjaxCall({

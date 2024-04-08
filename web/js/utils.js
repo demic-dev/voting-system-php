@@ -31,10 +31,13 @@ export function executeAjaxCall(options = {
     }).done(function (res) {
         if (options.successCallback) {
             options.successCallback(res);
-        } else {
+        }
+
+        const message = getTranslation(res.message);
+        if (message) {
             const toastBootstrap = bootstrap.Toast.getOrCreateInstance($("#toast"));
             $("#toast").addClass('text-bg-success');
-            $("#toast-body").text(res.code);
+            $("#toast-body").text(message);
             toastBootstrap.show();
         }
     })
@@ -43,18 +46,21 @@ export function executeAjaxCall(options = {
                 options.errorCallback(err);
             }
 
-            const toastBootstrap = bootstrap.Toast.getOrCreateInstance($("#toast"));
-            $("#toast-body").text(JSON.parse(err.responseText).message);
-            $("#toast").addClass('text-bg-danger');
-            toastBootstrap.show();
+            const message = getTranslation(JSON.parse(err.responseText).message);
+            if (message) {
+                const toastBootstrap = bootstrap.Toast.getOrCreateInstance($("#toast"));
+                $("#toast-body").text(message);
+                $("#toast").addClass('text-bg-danger');
+                toastBootstrap.show();
+            }
         });
 }
 
 /**
  * Get relative time based on the Intl library.
  * @source https://stackoverflow.com/a/53800501
- * @param {*} d1 
- * @param {*} d2 
+ * @param {Date} d1 
+ * @param {Date} d2 
  * @returns 
  */
 export function getRelativeTime(d1, d2 = new Date()) {
@@ -74,3 +80,114 @@ export function getRelativeTime(d1, d2 = new Date()) {
         if (Math.abs(elapsed) > units[u] || u == 'second')
             return rtf.format(Math.round(elapsed / units[u]), u)
 }
+
+
+/**
+ * Renders a user item with optional proxy selection.
+ * 
+ * @param {Object} user - The user object.
+ * @param {boolean} shouldRenderProxies - Indicates whether proxies should be rendered.
+ * @param {Array<number>} proxies - An array containing the IDs of proxies.
+ * @returns {HTMLElement} - The jQuery wrapper element containing the user item.
+ */
+function renderUser(allUsers, selectedUsers, user, shouldRenderProxies, proxies) {
+    /**
+     * Renders a proxy select element.
+     * 
+     * @param {number} n - The index.
+     * @param {Array<Object>} users - An array of user objects.
+     * @param {number} proxy - The ID of the selected proxy.
+     * @returns {HTMLElement} - The jQuery select element.
+     */
+    function renderProxySelect(n, users, proxy) {
+        const select = $(`<select class="form-select" data-index="${n - 1}"></select>`);
+        const defaultOption = $(`<option value="-1"></option>`);
+        defaultOption.text(getTranslation("LABELS.new_userlist.proxy_select", n));
+        defaultOption.attr("selected", true);
+        select.append(defaultOption);
+
+        for (const index in users) {
+            const user = users[index];
+
+            const option = $(`<option value="${user.id}"></option>`);
+            option.text(`${user.name} ${user.surname}`);
+            select.append(option);
+
+            if (proxy === user.id) {
+                option.prop("selected", true);
+            }
+        }
+
+        return select;
+    };
+
+    const wrapper = $(`<div class="user_item__wrapper" id="${user.id}"></div>`);
+    const elt = $(`<div class="user_item__container"></div>`).text(`${user.name} ${user.surname}`);
+    wrapper.append(elt);
+
+    elt.append(`<button type=\"button\" class=\"user__icon\"><i class=\"bi ${user.id in selectedUsers ? "bi-trash-fill" : "bi-plus"}\"></i></button>`);
+
+    if (shouldRenderProxies) {
+        const proxyContainer = $(`<div class="proxy__container" id=${user.id}></div>`);
+
+        const usersArray = Object
+            .keys(selectedUsers)
+            // I filter all the users that: are not the current one AND (are not already a proxy of other users BUT are proxy of the current one)
+            .filter(u =>
+                u != user.id &&
+                (
+                    !(Object.values(selectedUsers)).find(proxies => proxies.includes(u)) ||
+                    selectedUsers[user.id].includes(u)
+                )
+            )
+            .map(u => allUsers[u]);
+
+        proxyContainer.append(renderProxySelect(1, usersArray.filter(u => u.id !== proxies[1]), proxies[0]));
+        proxyContainer.append(renderProxySelect(2, usersArray.filter(u => u.id !== proxies[0]), proxies[1]));
+
+        wrapper.append(proxyContainer);
+    }
+
+    return wrapper;
+};
+
+/**
+ * Renders users in HTML based on the provided data.
+ * 
+ * @param {Object} allUsers - An object containing all user data.
+ * @param {Object} selectedUsers - An object containing selected user data.
+ * @param {string} id - The ID of the HTML element where the users will be rendered.
+ * @param {boolean} shouldRenderProxies - Indicates whether proxies should be rendered.
+ */
+export function renderUsersInHTML(allUsers, selectedUsers, id, shouldRenderProxies) {
+    $(id).empty();
+    if (shouldRenderProxies) {
+        Object
+            .keys(selectedUsers)
+            .forEach(userID => {
+                $(id).append(
+                    renderUser(
+                        allUsers,
+                        selectedUsers,
+                        allUsers[userID],
+                        !Object.values(selectedUsers).some(p => p.includes(userID)),
+                        selectedUsers[userID]
+                    )
+                );
+            });
+    } else {
+        Object
+            .keys(allUsers)
+            .filter(user => !selectedUsers.hasOwnProperty(user))
+            .forEach(user => {
+                $(id).append(
+                    renderUser(
+                        allUsers,
+                        selectedUsers,
+                        allUsers[user]
+                    ),
+                    false
+                );
+            });
+    }
+};

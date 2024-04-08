@@ -9,14 +9,28 @@
 function add_vote(mixed $data): mixed
 {
     $id = $data['poll'];
+    $proxy = $data['proxy'] ?? NULL;
     $user = $_SESSION['data']['id'];
-    // $proxy_user_id = $data['proxy_user_id'];
     $option = $data['option'];
 
-    if (($poll = get_item_from_file('id', $id, POLLS)) && !in_array($user, $poll['voted_by'])) {
+    if ($poll = get_item_from_file('id', $id, POLLS)) {
+        $userlist = get_item_from_file('id', $poll['userlist'], USERLISTS);
+        if (
+            in_array($user, $poll['voted_by']) ||
+            !in_array($user, $userlist['users']) ||
+            strtotime(date($poll['due_date'])) < time()
+        ) {
+            return NULL;
+        }
+
         array_push($poll['votes'], $option);
-        array_push($poll['voted_by'], $user);
-        // Add proxy handling
+        if ($proxy !== NULL) {
+            array_push($poll['voted_by'], $proxy);
+            array_push($poll['proxies'], $user);
+        } else {
+            array_push($poll['voted_by'], $user);
+            array_push($poll['proxies'], $proxy);
+        }
 
         return update_item_from_file($id, $poll, POLLS);
     };

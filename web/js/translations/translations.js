@@ -91,6 +91,11 @@ export default {
                 "en": "The poll has ended! Turnout: <strong>~%</strong>. <strong>~</strong> vote(s) out of <strong>~</strong>.",
                 "fr": "Le sondage est terminé ! Participation : <strong>~%</strong>. <strong>~</strong> vote(s) sur <strong>~</strong>."
             },
+            "poll_stats": {
+                "it": "Votato da <strong>~</strong> persona(e) su <strong>~</strong>. Affluenza: <strong>~%</strong>.",
+                "en": "Voted by <strong>~</strong> person(e) out of <strong>~</strong>. Turnout: <strong>~%</strong>.",
+                "fr": "Voté par <strong>~</strong> personne(s) sur <strong>~</strong>. Participation : <strong>~%</strong>."
+            },
             "option_detail": {
                 "it": "Per questa opzione, ci sono stati <strong>~</strong> voto(i) su <strong>~</strong>. Circa il <strong>~%</strong>.",
                 "en": "For this option, there have been <strong>~</strong> vote(s) out of <strong>~</strong>. Approximately <strong>~%</strong>.",
@@ -102,8 +107,13 @@ export default {
                 "it": "Le tue liste utenti",
                 "en": "Your user lists",
                 "fr": "Vos listes d'utilisateurs"
+            },
+            "heading": {
+                "it": `Le tue liste utenti. <small><a href="./new.php">Nuovo</a></small>`,
+                "en": `Your user lists. <small><a href="./new.php">New</a></small>`,
+                "fr": `Vos listes d'utilisateurs. <small><a href="./new.php">Nouveau</a></small>`
             }
-        },        
+        },
         "new_userlist": {
             "title": {
                 "it": "Crea nuova lista utenti",
@@ -124,6 +134,11 @@ export default {
                 "it": "Tutti gli utenti",
                 "en": "All the users",
                 "fr": "Tous les utilisateurs"
+            },
+            "proxy_select": {
+                "it": "Delega n. ~",
+                "en": "Proxy n. ~",
+                "fr": "Procuration n. ~"
             }
         },
         "your_polls": {
@@ -131,6 +146,11 @@ export default {
                 "it": "I tuoi sondaggi",
                 "en": "Your polls",
                 "fr": "Vos sondages"
+            },
+            "heading": {
+                "it": `I tuoi sondaggi. <small><a href="./new.php">Nuovo</a></small>`,
+                "en": `Your polls. <small><a href="./new.php">New</a></small>`,
+                "fr": `Vos sondages. <small><a href="./new.php">Nouveau</a></small>`
             }
         },
         "new_poll": {
@@ -262,7 +282,7 @@ export default {
                     "it": "Il nome non può essere vuoto!",
                     "en": "The name must not be empty!",
                     "fr": "Le nom ne peut pas être vide !"
-                }                
+                }
             },
             "surname": {
                 "label": {
@@ -274,7 +294,7 @@ export default {
                     "it": "Il cognome non può essere vuoto!",
                     "en": "The surname must not be empty!",
                     "fr": "Le nom de famille ne peut pas être vide !"
-                }                
+                }
             },
             "email": {
                 "label": {
@@ -380,9 +400,191 @@ export default {
                 "fr": "Vous n'avez pas encore participé à de sondages !"
             }
         }
-
     },
     "API_RESPONSES": {
+        "self": {
+            "200": {
+                "it": "",
+                "en": "",
+                "fr": ""
+            },
+            "400": {
+                "it": "Errore nella richiesta di informazioni utente.",
+                "en": "Error in user information request.",
+                "fr": "Erreur dans la demande d'informations utilisateur."
+            },
+            "401": {
+                "it": "Autorizzazione negata per ottenere le informazioni utente.",
+                "en": "Unauthorized to retrieve user information.",
+                "fr": "Non autorisé à récupérer les informations utilisateur."
+            },
+            "404": {
+                "it": "Informazioni utente non trovate.",
+                "en": "User information not found.",
+                "fr": "Informations utilisateur introuvables."
+            }
+        },
+        "user": {
+            "200": {
+                "it": "",
+                "en": "",
+                "fr": ""
+            },
+            "400": {
+                "it": "Errore nella richiesta di informazioni utente.",
+                "en": "Error in user information request.",
+                "fr": "Erreur dans la demande d'informations utilisateur."
+            },
+            "401": {
+                "it": "Autorizzazione negata per ottenere le informazioni utente.",
+                "en": "Unauthorized to retrieve user information.",
+                "fr": "Non autorisé à récupérer les informations utilisateur."
+            },
+            "404": {
+                "it": "Informazioni utente non trovate.",
+                "en": "User information not found.",
+                "fr": "Informations utilisateur introuvables."
+            }
+        },
+        "users-without-self": {
+            "200": {
+                "it": "",
+                "en": "",
+                "fr": ""
+            },
+            "400": {
+                "it": "Errore nell'ottenere l'elenco utenti.",
+                "en": "Error retrieving user list.",
+                "fr": "Erreur lors de la récupération de la liste des utilisateurs."
+            },
+            "401": {
+                "it": "Autorizzazione negata per ottenere l'elenco utenti.",
+                "en": "Unauthorized to retrieve user list.",
+                "fr": "Non autorisé à récupérer la liste des utilisateurs."
+            },
+            "404": {
+                "it": "Elenco utenti non trovato.",
+                "en": "User list not found.",
+                "fr": "Liste des utilisateurs non trouvée."
+            }
+        },
+        "userlist": {
+            "200": {
+                "it": "",
+                "en": "",
+                "fr": ""
+            },
+            "400": {
+                "it": "Errore nell'ottenere l'elenco utenti.",
+                "en": "Error retrieving user list.",
+                "fr": "Erreur lors de la récupération de la liste des utilisateurs."
+            },
+            "401": {
+                "it": "Autorizzazione negata per ottenere l'elenco utenti.",
+                "en": "Unauthorized to retrieve user list.",
+                "fr": "Non autorisé à récupérer la liste des utilisateurs."
+            },
+            "404": {
+                "it": "Elenco utenti non trovato.",
+                "en": "User list not found.",
+                "fr": "Liste des utilisateurs non trouvée."
+            }
+        },
+        "userlists-by-self": {
+            "200": {
+                "it": "",
+                "en": "",
+                "fr": ""
+            },
+            "400": {
+                "it": "Errore nell'ottenere l'elenco delle liste utenti.",
+                "en": "Error retrieving user lists.",
+                "fr": "Erreur lors de la récupération des listes d'utilisateurs."
+            },
+            "401": {
+                "it": "Autorizzazione negata per ottenere l'elenco delle liste utenti.",
+                "en": "Unauthorized to retrieve user lists.",
+                "fr": "Non autorisé à récupérer les listes des utilisateurs."
+            },
+            "404": {
+                "it": "Elenco delle liste utenti non trovato.",
+                "en": "User lists not found.",
+                "fr": "Listes des utilisateurs non trouvées."
+            }
+        },
+        "poll": {
+            "200": {
+                "it": "",
+                "en": "",
+                "fr": ""
+            },
+            "400": {
+                "it": "Errore nell'ottenere il sondaggio.",
+                "en": "Error retrieving poll.",
+                "fr": "Erreur lors de la récupération du sondage."
+            },
+            "401": {
+                "it": "Autorizzazione negata per ottenere il sondaggio.",
+                "en": "Unauthorized to retrieve poll.",
+                "fr": "Non autorisé à récupérer le sondage."
+            },
+            "404": {
+                "it": "Sondaggio non trovato.",
+                "en": "Poll not found.",
+                "fr": "Sondage non trouvé."
+            }
+        },
+        "polls-by-self": {
+            "200": {
+                "it": "",
+                "en": "",
+                "fr": ""
+            },
+            "400": {
+                "it": "Errore nell'ottenere i sondaggi.",
+                "en": "Error retrieving polls.",
+                "fr": "Erreur lors de la récupération des sondages."
+            },
+            "401": {
+                "it": "Autorizzazione negata per ottenere i sondaggi.",
+                "en": "Unauthorized to retrieve polls.",
+                "fr": "Non autorisé à récupérer les sondages."
+            },
+            "404": {
+                "it": "Sondaggi non trovati.",
+                "en": "Polls not found.",
+                "fr": "Sondages non trouvés."
+            }
+        },
+        "polls-per-user": {
+            "200": {
+                "it": "",
+                "en": "",
+                "fr": ""
+            },
+            "400": {
+                "it": "Errore nell'ottenere i sondaggi per utente.",
+                "en": "Error retrieving polls per user.",
+                "fr": "Erreur lors de la récupération des sondages par utilisateur."
+            },
+            "401": {
+                "it": "Autorizzazione negata per ottenere i sondaggi per utente.",
+                "en": "Unauthorized to retrieve polls per user.",
+                "fr": "Non autorisé à récupérer les sondages par utilisateur."
+            },
+            "404": {
+                "it": "Sondaggi per utente non trovati.",
+                "en": "Polls per user not found.",
+                "fr": "Sondages par utilisateur non trouvés."
+            }
+        },
+        "auth": {
+            "200": {
+                "it": "Login avvenuto correttamente!",
+                "en": "Login successful!",
+                "fr": "Connexion réussie!"
+            }
+        },
         "sign-up": {
             "200": {
                 "it": "Registrazione completata. Verrai reindirizzato al login tra qualche secondo...",
@@ -400,10 +602,203 @@ export default {
                 "fr": "Email déjà enregistrée."
             }
         },
-        "auth_success": {
-            "it": "Login avvenuto correttamente!",
-            "en": "Login successful!",
-            "fr": "Connexion réussie!"
+        "edit-self": {
+            "200": {
+                "it": "Modifica dell'utente avvenuta con successo.",
+                "en": "User edited successfully.",
+                "fr": "Utilisateur modifié avec succès."
+            },
+            "400": {
+                "it": "Errore nella modifica dell'utente.",
+                "en": "Error editing user.",
+                "fr": "Erreur lors de la modification de l'utilisateur."
+            },
+            "401": {
+                "it": "Autorizzazione negata per modificare l'utente.",
+                "en": "Unauthorized to edit user.",
+                "fr": "Non autorisé à modifier l'utilisateur."
+            },
+            "404": {
+                "it": "Utente non trovato per la modifica.",
+                "en": "User not found for editing.",
+                "fr": "Utilisateur non trouvé pour la modification."
+            }
+        },
+        "create-userlist": {
+            "200": {
+                "it": "Creazione della lista utenti avvenuta con successo.",
+                "en": "User list created successfully.",
+                "fr": "Liste d'utilisateurs créée avec succès."
+            },
+            "400": {
+                "it": "Errore nella creazione della lista utenti.",
+                "en": "Error creating user list.",
+                "fr": "Erreur lors de la création de la liste d'utilisateurs."
+            },
+            "401": {
+                "it": "Autorizzazione negata per creare la lista utenti.",
+                "en": "Unauthorized to create user list.",
+                "fr": "Non autorisé à créer la liste d'utilisateurs."
+            },
+            "404": {
+                "it": "Lista utenti non trovata per la creazione.",
+                "en": "User list not found for creation.",
+                "fr": "Liste d'utilisateurs non trouvée pour la création."
+            }
+        },
+        "edit-userlist": {
+            "200": {
+                "it": "Modifica della lista utenti avvenuta con successo.",
+                "en": "User list edited successfully.",
+                "fr": "Liste d'utilisateurs modifiée avec succès."
+            },
+            "400": {
+                "it": "Errore nella modifica della lista utenti.",
+                "en": "Error editing user list.",
+                "fr": "Erreur lors de la modification de la liste d'utilisateurs."
+            },
+            "401": {
+                "it": "Autorizzazione negata per modificare la lista utenti.",
+                "en": "Unauthorized to edit user list.",
+                "fr": "Non autorisé à modifier la liste d'utilisateurs."
+            },
+            "404": {
+                "it": "Lista utenti non trovata per la modifica.",
+                "en": "User list not found for editing.",
+                "fr": "Liste d'utilisateurs non trouvée pour la modification."
+            }
+        },
+        "delete-userlist": {
+            "200": {
+                "it": "Eliminazione della lista utenti avvenuta con successo!",
+                "en": "User list deletion successful!",
+                "fr": "Suppression de la liste d'utilisateurs réussie!"
+            },
+            "400": {
+                "it": "Errore durante l'eliminazione della lista utenti. Richiesta non valida.",
+                "en": "Error deleting user list. Bad request.",
+                "fr": "Erreur lors de la suppression de la liste d'utilisateurs. Requête incorrecte."
+            },
+            "401": {
+                "it": "Non autorizzato a eliminare la lista utenti. Autorizzazione richiesta.",
+                "en": "Unauthorized to delete user list. Authorization required.",
+                "fr": "Non autorisé à supprimer la liste d'utilisateurs. Autorisation requise."
+            },
+            "404": {
+                "it": "Lista utenti non trovata.",
+                "en": "User list not found.",
+                "fr": "Liste d'utilisateurs non trouvée."
+            }
+        },
+        "create-poll": {
+            "200": {
+                "it": "Creazione del sondaggio avvenuta con successo!",
+                "en": "Poll creation successful!",
+                "fr": "Création du sondage réussie!"
+            },
+            "400": {
+                "it": "Errore durante la creazione del sondaggio. Richiesta non valida.",
+                "en": "Error creating poll. Bad request.",
+                "fr": "Erreur lors de la création du sondage. Requête incorrecte."
+            },
+            "401": {
+                "it": "Non autorizzato a creare il sondaggio. Autorizzazione richiesta.",
+                "en": "Unauthorized to create poll. Authorization required.",
+                "fr": "Non autorisé à créer un sondage. Autorisation requise."
+            },
+            "404": {
+                "it": "Sondaggio non trovato.",
+                "en": "Poll not found.",
+                "fr": "Sondage non trouvé."
+            }
+        },
+        "update-poll": {
+            "200": {
+                "it": "Aggiornamento del sondaggio avvenuto con successo!",
+                "en": "Poll update successful!",
+                "fr": "Mise à jour du sondage réussie!"
+            },
+            "400": {
+                "it": "Errore durante l'aggiornamento del sondaggio. Richiesta non valida.",
+                "en": "Error updating poll. Bad request.",
+                "fr": "Erreur lors de la mise à jour du sondage. Requête incorrecte."
+            },
+            "401": {
+                "it": "Non autorizzato ad aggiornare il sondaggio. Autorizzazione richiesta.",
+                "en": "Unauthorized to update poll. Authorization required.",
+                "fr": "Non autorisé à mettre à jour le sondage. Autorisation requise."
+            },
+            "404": {
+                "it": "Sondaggio non trovato.",
+                "en": "Poll not found.",
+                "fr": "Sondage non trouvé."
+            }
+        },
+        "delete-poll": {
+            "200": {
+                "it": "Eliminazione del sondaggio avvenuta con successo!",
+                "en": "Poll deletion successful!",
+                "fr": "Suppression du sondage réussie!"
+            },
+            "400": {
+                "it": "Errore durante l'eliminazione del sondaggio. Richiesta non valida.",
+                "en": "Error deleting poll. Bad request.",
+                "fr": "Erreur lors de la suppression du sondage. Requête incorrecte."
+            },
+            "401": {
+                "it": "Non autorizzato ad eliminare il sondaggio. Autorizzazione richiesta.",
+                "en": "Unauthorized to delete poll. Authorization required.",
+                "fr": "Non autorisé à supprimer le sondage. Autorisation requise."
+            },
+            "404": {
+                "it": "Sondaggio non trovato.",
+                "en": "Poll not found.",
+                "fr": "Sondage non trouvé."
+            }
+        },
+        "close-poll": {
+            "200": {
+                "it": "Chiusura del sondaggio avvenuta con successo!",
+                "en": "Poll closure successful!",
+                "fr": "Fermeture du sondage réussie!"
+            },
+            "400": {
+                "it": "Errore durante la chiusura del sondaggio. Richiesta non valida.",
+                "en": "Error closing poll. Bad request.",
+                "fr": "Erreur lors de la fermeture du sondage. Requête incorrecte."
+            },
+            "401": {
+                "it": "Non autorizzato a chiudere il sondaggio. Autorizzazione richiesta.",
+                "en": "Unauthorized to close poll. Authorization required.",
+                "fr": "Non autorisé à fermer le sondage. Autorisation requise."
+            },
+            "404": {
+                "it": "Sondaggio non trovato.",
+                "en": "Poll not found.",
+                "fr": "Sondage non trouvé."
+            }
+        },
+        "add-vote": {
+            "200": {
+                "it": "Voto aggiunto con successo!",
+                "en": "Vote added successfully!",
+                "fr": "Vote ajouté avec succès!"
+            },
+            "400": {
+                "it": "Errore durante l'aggiunta del voto. Richiesta non valida.",
+                "en": "Error adding vote. Bad request.",
+                "fr": "Erreur lors de l'ajout du vote. Requête incorrecte."
+            },
+            "401": {
+                "it": "Non autorizzato ad aggiungere il voto. Autorizzazione richiesta.",
+                "en": "Unauthorized to add vote. Authorization required.",
+                "fr": "Non autorisé à ajouter un vote. Autorisation requise."
+            },
+            "404": {
+                "it": "Sondaggio non trovato.",
+                "en": "Poll not found.",
+                "fr": "Sondage non trouvé."
+            }
         }
     }
 }

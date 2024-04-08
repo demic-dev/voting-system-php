@@ -34,8 +34,7 @@
             <div class="userlist__container">
                 <div class="userlist__wrapper">
                     <h2 class="form__subheading" data-translation="LABELS.new_userlist.selected_users"></h2>
-                    <div class="userlist__subsection" id="selected-users">
-                    </div>
+                    <div class="userlist__subsection" id="selected-users"></div>
                 </div>
                 <div class="userlist__wrapper">
                     <h2 class="form__subheading" data-translation="LABELS.new_userlist.select_users"></h2>

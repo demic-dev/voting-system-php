@@ -41,16 +41,19 @@ switch ($REQUEST_METHOD) {
                 //region user
 
             case 'self':
-                $res = compose_api_response(true, NULL, 'get_self');
+                $messages = array(
+                    '404' => "API_RESPONSES.self.404",
+                );
+                $res = compose_api_response(true, NULL, 'get_self', [], $_GET[API_NAME]);
                 break;
 
             case 'user':
                 $params_safety = [['email', 'is_email']];
-                $res = compose_api_response(true, $payload, 'get_user', $params_safety);
+                $res = compose_api_response(true, $payload, 'get_user', $params_safety, $_GET[API_NAME]);
                 break;
 
             case 'users-without-self':
-                $res = compose_api_response(true, $payload, 'get_users_without_self', [], array());
+                $res = compose_api_response(true, $payload, 'get_users_without_self', [], $_GET[API_NAME]);
                 break;
 
                 //endregion
@@ -59,12 +62,11 @@ switch ($REQUEST_METHOD) {
 
             case 'userlist':
                 $params_safety = [['id', 'is_string']];
-                $messages = array();
-                $res = compose_api_response(true, $payload, 'get_userlist', $params_safety, $messages);
+                $res = compose_api_response(true, $payload, 'get_userlist', $params_safety, $_GET[API_NAME]);
                 break;
 
             case 'userlists-by-self':
-                $res = compose_api_response(true, NULL, 'userlists_by_self', [], array());
+                $res = compose_api_response(true, NULL, 'userlists_by_self', [], $_GET[API_NAME]);
                 break;
 
                 //endregion
@@ -72,23 +74,20 @@ switch ($REQUEST_METHOD) {
                 //region polls
 
             case 'poll':
-                $messages = array();
-                $res = compose_api_response(true, $payload, 'get_poll', [], $messages);
+                $params_safety = [['id', 'is_string']];
+                $res = compose_api_response(true, $payload, 'get_poll', $params_safety, $_GET[API_NAME]);
                 break;
 
             case 'polls-by-self':
-                $messages = array();
-                $res = compose_api_response(true, NULL, 'get_polls_by_self', [], $messages);
-                break;
 
+                $res = compose_api_response(true, NULL, 'get_polls_by_self', [], $_GET[API_NAME]);
+                break;
             case 'polls-per-user':
-                $messages = array();
-                $res = compose_api_response(true, NULL, 'get_polls_per_user', [], $messages);
-                break;
 
+                $res = compose_api_response(true, NULL, 'get_polls_per_user', [], $_GET[API_NAME]);
+                break;
 
                 //endregion
-
             default:
                 $res = get_code_and_message(404);
                 break;
@@ -109,16 +108,12 @@ switch ($REQUEST_METHOD) {
 
             case 'sign-in':
                 $params_safety = [['email', 'is_email'], ['password', 'is_string']];
-                $messages = array(
-                    '200' => "API_RESPONSES.auth_success",
-                    '400' => "Email not valid.",
-                    '401' => "Email or password incorrect.",
-                );
-                $res = compose_api_response(false, $payload, 'login', $params_safety, $messages);
+
+                $res = compose_api_response(false, $payload, 'login', $params_safety, $api_name);
                 break;
 
             case 'sign-out':
-                $res = compose_api_response(true, NULL, 'logout', [], array());
+                $res = compose_api_response(true, NULL, 'logout', [], $api_name);
                 break;
 
                 //endregion
@@ -127,26 +122,12 @@ switch ($REQUEST_METHOD) {
 
             case 'sign-up':
                 $params_safety = [['name', 'is_string'], ['surname', 'is_string'], ['email', 'is_email'], ['password', 'is_string']];
-                $messages = array(
-                    '200' => "API_RESPONSES.sign-up.200",
-                    '400' => "API_RESPONSES.sign-up.400",
-                    '404' => "API_RESPONSES.sign-up.404",
-                );
-                $res = compose_api_response(false, $payload, 'create_user', $params_safety, $messages);
+                $res = compose_api_response(false, $payload, 'create_user', $params_safety, $api_name);
                 break;
 
             case 'edit-self':
-                $messages = array(
-                    '200' => "User updated successfully.",
-                );
-                $res = compose_api_response(true, $payload, 'edit_self', [], $messages);
-                break;
-
-            case 'edit-user':
-                $messages = array(
-                    '200' => "User updated successfully.",
-                );
-                $res = compose_api_response(true, $payload, 'edit_user', [], $messages);
+                $params_safety = [['id', 'is_string']];
+                $res = compose_api_response(true, $payload, 'edit_self', [], $api_name);
                 break;
 
                 //endregion
@@ -154,33 +135,17 @@ switch ($REQUEST_METHOD) {
                 //region userlists
 
             case 'create-userlist':
-                $messages = array(
-                    '200' => "API_RESPONSES.new_userlist.200",
-                    '400' => "API_RESPONSES.new_userlist.400",
-                );
-                $res = compose_api_response(true, $payload, 'create_userlist', [], $messages);
+                $res = compose_api_response(true, $payload, 'create_userlist', [], $api_name);
                 break;
 
             case 'edit-userlist':
                 $params_safety = [['id', 'is_string']];
-                $messages = array(
-                    '200' => 'API_RESPONSES.edit_userlist.200',
-                    '400' => "API_RESPONSES.edit_userlist.400",
-                    '401' => "API_RESPONSES.edit_userlist.401",
-                    '404' => "API_RESPONSES.edit_userlist.404",
-                );
-                $res = compose_api_response(true, $payload, 'edit_userlist', $params_safety, $messages);
+                $res = compose_api_response(true, $payload, 'edit_userlist', $params_safety, $api_name);
                 break;
 
             case 'delete-userlist':
                 $params_safety = [['id', 'is_string']];
-                $messages = array(
-                    '200' => 'API_RESPONSES.delete_userlist.200',
-                    '400' => "API_RESPONSES.delete_userlist.400",
-                    '401' => "API_RESPONSES.delete_userlist.401",
-                    '404' => "API_RESPONSES.delete_userlist.404",
-                );
-                $res = compose_api_response(true, $payload, 'delete_userlist', $params_safety, $messages);
+                $res = compose_api_response(true, $payload, 'delete_userlist', $params_safety, $api_name);
                 break;
 
                 //endregion
@@ -189,34 +154,17 @@ switch ($REQUEST_METHOD) {
 
             case 'create-poll':
                 $params_safety = [['name', 'is_string'], ['description', 'is_string'], ['start_date', 'is_string'], ['due_date', 'is_string']];
-                $messages = array(
-                    '200' => "API_RESPONSES.create_poll.200",
-                    '400' => "API_RESPONSES.create_poll.400",
-                    '401' => "API_RESPONSES.create_poll.401",
-                    '404' => "API_RESPONSES.create_poll.404",
-                );
-                $res = compose_api_response(true, $payload, 'create_poll', $params_safety, $messages);
+                $res = compose_api_response(true, $payload, 'create_poll', $params_safety, $api_name);
                 break;
 
             case 'update-poll':
                 $params_safety = [['name', 'is_string'], ['description', 'is_string'], ['start_date', 'is_string'], ['due_date', 'is_string']];
-                $messages = array(
-                    '200' => "API_RESPONSES.update_poll.200",
-                    '400' => "API_RESPONSES.update_poll.400",
-                    '401' => "API_RESPONSES.update_poll.401",
-                    '404' => "API_RESPONSES.update_poll.404",
-                );
-                $res = compose_api_response(true, $payload, 'edit_poll', [], $messages);
+                $res = compose_api_response(true, $payload, 'edit_poll', [], $api_name);
                 break;
 
             case 'delete-poll':
                 $params_safety = [['id', 'is_string']];
-                $messages = array(
-                    '400' => "API_RESPONSES.update_poll.400",
-                    '401' => "API_RESPONSES.update_poll.401",
-                    '404' => "API_RESPONSES.update_poll.404",
-                );
-                $res = compose_api_response(true, $payload, 'delete_poll', [], $messages);
+                $res = compose_api_response(true, $payload, 'delete_poll', [], $api_name);
                 break;
 
                 //endregion
@@ -225,18 +173,11 @@ switch ($REQUEST_METHOD) {
 
             case 'close-poll':
                 $params_safety = [['id', 'is_string'], ['privateKey', 'is_string']];
-                $messages = array(
-                    '400' => "API_RESPONSES.update_poll.400",
-                    '401' => "API_RESPONSES.update_poll.401",
-                    '404' => "API_RESPONSES.update_poll.404",
-                );
-                $res = compose_api_response(true, $payload, 'close_voting', [], $messages);
+                $res = compose_api_response(true, $payload, 'close_voting', [], $api_name);
                 break;
 
             case 'add-vote':
-                $params_safety = [];
-                $messages = array();
-                $res = compose_api_response(true, $payload, 'add_vote', [], $messages);
+                $res = compose_api_response(true, $payload, 'add_vote', [], $api_name);
                 break;
 
                 //endregion
