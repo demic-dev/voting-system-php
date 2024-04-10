@@ -113,6 +113,10 @@ function edit_self(mixed $data): mixed
     $id = $data['id'];
     unset($data['id']);
 
+    if ($id !== $_SESSION['data']['id']) {
+        return 401;
+    }
+
     if ($data['password'] === "") {
         unset($data['password']);
     } else {
@@ -133,6 +137,10 @@ function edit_self(mixed $data): mixed
 
 function delete_user(mixed $data): mixed
 {
+    if ($data['id'] !== $_SESSION['data']['id']) {
+        return 401;
+    }
+
     return delete_item_from_file($data['id'], USERS);
 }
 

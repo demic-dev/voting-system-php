@@ -93,7 +93,7 @@ function find_in_file(string $key, string $value, mixed $filecontent): mixed
 {
     $idx = array_search($value, array_column($filecontent, $key));
 
-    if ($idx !== False) {
+    if ($idx !== False || $idx === 0) {
         return $filecontent[$idx];
     }
 
@@ -113,7 +113,7 @@ function update_in_file(string $id, mixed $data, mixed $filecontent, mixed &$ind
 {
     $idx = array_search($id, array_column($filecontent, 'id'));
 
-    if ($idx !== False) {
+    if ($idx !== False || $idx === 0) {
         $filecontent[$idx] = array(
             ...$filecontent[$idx],
             ...set_data_log(true),

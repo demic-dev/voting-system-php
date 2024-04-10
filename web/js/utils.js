@@ -47,6 +47,7 @@ export function executeAjaxCall(options = {
             }
 
             const message = getTranslation(JSON.parse(err.responseText).message);
+            console.log(message)
             if (message) {
                 const toastBootstrap = bootstrap.Toast.getOrCreateInstance($("#toast"));
                 $("#toast-body").text(message);

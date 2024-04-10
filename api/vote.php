@@ -20,7 +20,7 @@ function add_vote(mixed $data): mixed
             !in_array($user, $userlist['users']) ||
             strtotime(date($poll['due_date'])) < time()
         ) {
-            return NULL;
+            return 400;
         }
 
         array_push($poll['votes'], $option);
@@ -35,7 +35,7 @@ function add_vote(mixed $data): mixed
         return update_item_from_file($id, $poll, POLLS);
     };
 
-    return NULL;
+    return 404;
 }
 
 /**
@@ -48,7 +48,11 @@ function close_voting(mixed $data): mixed
 {
     if ($poll = get_item_from_file('id', $data['id'], POLLS)) {
         if ($poll['closed']) {
-            return NULL;
+            return 400;
+        }
+
+        if ($poll['owner'] !== $_SESSION['data']['id']) {
+            return 401;
         }
 
         $private_key = $data['privateKey'];
@@ -61,7 +65,7 @@ function close_voting(mixed $data): mixed
                 $index = array_search($decrypted_answer, array_column($poll['options'], 'id'));
                 $poll['options'][$index]['count']++;
             } else {
-                return NULL;
+                return 400;
             }
         }
 
@@ -74,5 +78,5 @@ function close_voting(mixed $data): mixed
         return update_item_from_file($data['id'], $poll, POLLS);
     };
 
-    return NULL;
+    return 404;
 }

@@ -53,13 +53,15 @@ function get_poll(mixed $data): mixed
         return __parse_poll($poll);
     };
 
-    if (($poll = get_item_from_file('id', $data['id'], POLLS, $mapping_callback)) &&
-        in_array($_SESSION['data']['id'], array_column($poll['userlist']['users'], 'id'))
-    ) {
-        return $poll;
+    if (($poll = get_item_from_file('id', $data['id'], POLLS, $mapping_callback))) {
+        if (in_array($_SESSION['data']['id'], array_column($poll['userlist']['users'], 'id'))) {
+            return $poll;
+        }
+
+        return 401;
     }
 
-    return NULL;
+    return 404;
 }
 
 /**
@@ -145,28 +147,32 @@ function create_poll(mixed $data): mixed
     $due_date = $data['due_date'];
     $userlist = $data['userlist'];
 
-    $file = safely_open_json(POLLS);
+    if ($file = safely_open_json(POLLS)) {
+        $res = array(
+            'id' => $id,
+            'name' => $name,
+            'description' => $description,
+            'options' => $options,
+            'owner' => $_SESSION['data']['id'],
+            'public_key' => $publickey,
+            'start_date' => $start_date,
+            'due_date' => $due_date,
+            'userlist' => $userlist,
+            'voted_by' => [],
+            'proxies' => [],
+            'votes' => [],
+            'closed' => false,
+            ...set_data_log(),
+        );
+        array_push($file, $res);
+        if (safely_overwrite_json(POLLS, $file)) {
+            return $res;
+        }
 
-    $res = array(
-        'id' => $id,
-        'name' => $name,
-        'description' => $description,
-        'options' => $options,
-        'owner' => $_SESSION['data']['id'],
-        'public_key' => $publickey,
-        'start_date' => $start_date,
-        'due_date' => $due_date,
-        'userlist' => $userlist,
-        'voted_by' => [],
-        'proxies' => [],
-        'votes' => [],
-        'closed' => false,
-        ...set_data_log(),
-    );
-    array_push($file, $res);
-    safely_overwrite_json(POLLS, $file);
+        return 500;
+    }
 
-    return $res;
+    return 500;
 }
 
 /**
@@ -183,6 +189,10 @@ function edit_poll(mixed $data): mixed
     unset($data['id']);
 
     if ($old = get_item_from_file('id', $id, POLLS)) {
+        if ($old['owner'] !== $_SESSION['data']['id']) {
+            return 401;
+        }
+
         foreach ($data as $k => $v) {
             // I'm looking for difference between the old options and the new one. I add/remove only the different ones.
             if ($k === 'options') {
@@ -213,10 +223,10 @@ function edit_poll(mixed $data): mixed
             }
         }
 
-        return update_item_from_file($id, $data, POLLS);
+        return update_item_from_file($id, $data, POLLS) ?? 404;
     }
 
-    return NULL;
+    return 404;
 }
 
 /**
@@ -227,7 +237,11 @@ function edit_poll(mixed $data): mixed
  */
 function delete_poll(mixed $data): mixed
 {
-    return delete_item_from_file($data['id'], POLLS);
+    if (($poll = get_item_from_file('id', $data['id'], POLLS)) && $poll['owner'] !== $_SESSION['data']['id']) {
+        return 401;
+    }
+
+    return delete_item_from_file($data['id'], POLLS) ?? 404;
 }
 
 //endregion

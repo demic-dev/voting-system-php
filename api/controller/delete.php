@@ -11,10 +11,10 @@ function delete_item_from_file(string $id, string $filepath): mixed
 {
     $file = safely_open_json($filepath);
 
-    if (($index = array_search($id, array_column($file, 'id'))) && $index !== False) {
+    if (($index = array_search($id, array_column($file, 'id'))) || $index === 0) {
         unset($file[$index]);
 
-        return safely_overwrite_json($filepath, $file);
+        return safely_overwrite_json($filepath, array_values($file));
     };
 
     return NULL;

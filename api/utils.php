@@ -84,7 +84,7 @@ function compose_api_response(bool $is_protected, mixed $params, mixed $callback
 
         /* Start the session if the API is authenticated. */
         if ($is_protected && session_start() && !isset($_SESSION['data'])) {
-            return get_code_and_message(401);
+            return get_code_and_message(401, $messages['401']);
         }
 
         /* Perform the check on the params passed to the function. If some data is missing, then return a 400 error. */

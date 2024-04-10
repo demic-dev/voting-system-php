@@ -9,6 +9,7 @@ import { getTranslation } from './translations/index.js';
 function setAllTranslationsLabel() {
     $('[data-translation]').each(function (_, element) {
         $(element).html(getTranslation($(element).data('translation')));
+        $(element).attr("data-translation", null);
     });
 }
 

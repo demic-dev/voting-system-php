@@ -7,8 +7,8 @@ BASE_URL = "http://localhost:9000/api/index.php"
 
 admin_request = requests.post(BASE_URL, json={
     "API_NAME": "sign-up",
-    "name": "Michele",
-    "surname": "De Cillis",
+    "name": "Admin",
+    "surname": "Admin",
     "email": "admin@admin.com",
     "password": "12345678"
 })
@@ -20,6 +20,10 @@ admin_login = requests.post(BASE_URL, json={
     "email": "admin@admin.com",
     "password": "12345678"
 })
+
+cookies = admin_login.cookies.get_dict()
+
+print(cookies)
 
 ### USERS
 
@@ -37,21 +41,3 @@ for n in range(bot_number):
     res = json.loads(res["data"])
     bots.append(res["id"])
     print(admin_request.status_code)
-    
-# ### USERLISTS
-
-userlist_number = 4
-userlists = []
-for n in range(userlist_number):
-    userlist_request = requests.post(BASE_URL, json={
-        "API_NAME": "create-userlist",
-        "name": f"Userlist n. {n}",
-        "users": bots[n:(n+1)*userlist_number],
-        "proxies": []
-    })
-    res = json.loads(bot_request.text)
-    res = json.loads(res["data"])
-    userlists.append(res["id"])
-    print(userlist_request.status_code)
-
-    

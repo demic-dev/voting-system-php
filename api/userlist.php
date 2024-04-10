@@ -108,7 +108,15 @@ function edit_userlist(mixed $data): mixed
 
     array_push($data['users'], $_SESSION['data']['id']);
 
-    return update_item_from_file($id, $data, USERLISTS);
+    if ($userlist = get_item_from_file('id', $id, USERLISTS)) {
+        if ($userlist['owner'] !== $_SESSION['data']['id']) {
+            return 401;
+        }
+
+        return update_item_from_file($id, $data, USERLISTS);
+    }
+
+    return 404;
 }
 
 /**
@@ -119,6 +127,10 @@ function edit_userlist(mixed $data): mixed
  */
 function delete_userlist(mixed $data): mixed
 {
+    if ($data['owner'] !== $_SESSION['data']['id']) {
+        return 401;
+    }
+
     return delete_item_from_file($data['id'], USERLISTS);
 }
 

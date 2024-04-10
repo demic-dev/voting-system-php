@@ -1,13 +1,67 @@
-/**
- * Translations: https://chat.openai.com/c/8a43a1f1-2235-4664-a452-d8766415ed67
- * ```json{
-                "it": "",
-                "en": "",
-                "fr": ""
-    }```
- */
 export default {
     "LABELS": {
+        "landing_page": {
+            "heading": {
+                "it": "TrustBallot è la soluzione perfetta per prendere democraticamente una decisione durante le tue riunioni.",
+                "en": "TrustBallot is the perfect solution for taking democratic decisions during your meetings.",
+                "fr": "TrustBallot est la solution idéale pour prendre des décisions démocratiques lors de vos réunions."
+            },
+            "subheading": {
+                "it": "Fai un passo avanti nel futuro e inizia a utilizzare TrustBallot oggi stesso!",
+                "en": "Take a step further into the future and start using TrustBallot today!",
+                "fr": "Faites un pas de plus vers l'avenir et commencez à utiliser TrustBallot dès aujourd'hui !"
+            },
+            "gotoplatform": {
+                "it": "Accedi alla piattaforma",
+                "en": "Log in to the platform",
+                "fr": "Connectez-vous à la plateforme"
+            },
+            "section_heading": {
+                "it": "Come funziona?",
+                "en": "How does it works?",
+                "fr": "Comment ça marche ?"
+            },
+            "section_subheading": {
+                "it": "TrustBallot utilizza le migliori tecniche di crittografia per offrirti le migliori prestazioni e farti sentire il più sicuro possibile.",
+                "en": "TrustBallot uses the best encryption techniques to give you the best performance and make you feel as safe as possible.",
+                "fr": "TrustBallot utilise les meilleures techniques de cryptage pour vous offrir les meilleures performances et vous faire sentir aussi en sécurité que possible."
+            },
+            "hero_cta": {
+                "it": "Accedi",
+                "en": "Sign In",
+                "fr": "Connexion"
+            },
+            "item1_title": {
+                "it": "Crea una lista utenti",
+                "en": "Create a user list",
+                "fr": "Créer une liste d'utilisateurs"
+            },
+            "item1_subtitle": {
+                "it": "Gli utenti possono anche delegare il voto a qualcun altro.",
+                "en": "Users can also delegate the vote to someone else.",
+                "fr": "Les utilisateurs peuvent également déléguer leur vote à quelqu'un d'autre."
+            },
+            "item2_title": {
+                "it": "Crea un sondaggio",
+                "en": "Create a poll",
+                "fr": "Créer un sondage"
+            },
+            "item2_subtitle": {
+                "it": "Puoi aggiungere quante opzioni desideri. Può iniziare ora o quando vuoi!",
+                "en": "You can add as many options as you want. It can start now, or whenever you want!",
+                "fr": "Vous pouvez ajouter autant d'options que vous le souhaitez. Il peut commencer maintenant ou quand vous le souhaitez !"
+            },
+            "item3_title": {
+                "it": "Fai votare tutti!",
+                "en": "Get everyone together to vote!",
+                "fr": "Réunissez tout le monde pour voter !"
+            },
+            "item3_subtitle": {
+                "it": "Inviagli il link e il gioco è fatto. Oppure possono semplicemente andare alla loro dashboard.",
+                "en": "Send them the link and it's done. Or they can just go to their dashboard.",
+                "fr": "Envoyez-leur le lien et c'est fait. Ou ils peuvent simplement aller sur leur tableau de bord."
+            }
+        },
         "account": {
             "title": {
                 "it": "Il tuo account",
@@ -578,12 +632,17 @@ export default {
                 "fr": "Sondages par utilisateur non trouvés."
             }
         },
-        "auth": {
+        "sign-in": {
             "200": {
                 "it": "Login avvenuto correttamente!",
                 "en": "Login successful!",
                 "fr": "Connexion réussie!"
-            }
+            },
+            "401": {
+                "it": "Email o password errate.",
+                "en": "Email or password incorrect.",
+                "fr": "Email ou mot de passe incorrect."
+            },
         },
         "sign-up": {
             "200": {
@@ -680,9 +739,9 @@ export default {
                 "fr": "Erreur lors de la suppression de la liste d'utilisateurs. Requête incorrecte."
             },
             "401": {
-                "it": "Non autorizzato a eliminare la lista utenti. Autorizzazione richiesta.",
-                "en": "Unauthorized to delete user list. Authorization required.",
-                "fr": "Non autorisé à supprimer la liste d'utilisateurs. Autorisation requise."
+                "it": "Non autorizzato a eliminare la lista utenti.",
+                "en": "Unauthorized to delete user list.",
+                "fr": "Non autorisé à supprimer la liste d'utilisateurs."
             },
             "404": {
                 "it": "Lista utenti non trovata.",
@@ -724,9 +783,9 @@ export default {
                 "fr": "Erreur lors de la mise à jour du sondage. Requête incorrecte."
             },
             "401": {
-                "it": "Non autorizzato ad aggiornare il sondaggio. Autorizzazione richiesta.",
-                "en": "Unauthorized to update poll. Authorization required.",
-                "fr": "Non autorisé à mettre à jour le sondage. Autorisation requise."
+                "it": "Non autorizzato ad aggiornare il sondaggio.",
+                "en": "Unauthorized to update poll.",
+                "fr": "Non autorisé à mettre à jour le sondage."
             },
             "404": {
                 "it": "Sondaggio non trovato.",
@@ -746,9 +805,9 @@ export default {
                 "fr": "Erreur lors de la suppression du sondage. Requête incorrecte."
             },
             "401": {
-                "it": "Non autorizzato ad eliminare il sondaggio. Autorizzazione richiesta.",
-                "en": "Unauthorized to delete poll. Authorization required.",
-                "fr": "Non autorisé à supprimer le sondage. Autorisation requise."
+                "it": "Non autorizzato ad eliminare il sondaggio.",
+                "en": "Unauthorized to delete poll.",
+                "fr": "Non autorisé à supprimer le sondage."
             },
             "404": {
                 "it": "Sondaggio non trovato.",
@@ -768,9 +827,9 @@ export default {
                 "fr": "Erreur lors de la fermeture du sondage. Requête incorrecte."
             },
             "401": {
-                "it": "Non autorizzato a chiudere il sondaggio. Autorizzazione richiesta.",
-                "en": "Unauthorized to close poll. Authorization required.",
-                "fr": "Non autorisé à fermer le sondage. Autorisation requise."
+                "it": "Non autorizzato a chiudere il sondaggio.",
+                "en": "Unauthorized to close poll.",
+                "fr": "Non autorisé à fermer le sondage."
             },
             "404": {
                 "it": "Sondaggio non trovato.",
@@ -790,9 +849,9 @@ export default {
                 "fr": "Erreur lors de l'ajout du vote. Requête incorrecte."
             },
             "401": {
-                "it": "Non autorizzato ad aggiungere il voto. Autorizzazione richiesta.",
-                "en": "Unauthorized to add vote. Authorization required.",
-                "fr": "Non autorisé à ajouter un vote. Autorisation requise."
+                "it": "Non autorizzato ad aggiungere il voto.",
+                "en": "Unauthorized to add vote.",
+                "fr": "Non autorisé à ajouter un vote."
             },
             "404": {
                 "it": "Sondaggio non trovato.",
